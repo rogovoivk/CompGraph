@@ -278,7 +278,7 @@ class TestMDI : JFrame() {
 
             }
             var refreshBut: JButton = JButton("Обновить графики")
-            refreshBut.addActionListener({ createOscilogram() })
+            refreshBut.addActionListener{ createOscilogram() }
             oscillogramContents.add(refreshBut)
 
             var scBar: JScrollBar = JScrollBar()
@@ -298,8 +298,8 @@ class TestMDI : JFrame() {
                 oscillogramList[i].hight = heightOscillogrammGraph.toFloat()
                 //oscillogramList[i].wight = 600f
                 //oscillogramList[i].ChangeDot(0, oscillogramList[i].arrDot.size - 1)
-                oscillogramList[i].start = 0
-                oscillogramList[i].finish = oscillogramList[i].sgn.samplesnumber
+                oscillogramList[i].start = oscillogramList[0].start
+                oscillogramList[i].finish = oscillogramList[0].finish
 
                 /**Canvas and add comp  */
                 //oscillogramList[i].canv.preferredSize = Dimension(600, 200)
@@ -338,6 +338,7 @@ class TestMDI : JFrame() {
                 }
             }
             scBar.addAdjustmentListener(winListener)
+            if ((oscillogramList[0].start == 0) or (oscillogramList[0].finish == oscillogramList[0].sgn.samplesnumber-1))
             scBar.isVisible = false
 
             /**Button  */
