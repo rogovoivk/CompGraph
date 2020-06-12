@@ -221,7 +221,7 @@ class TestMDI : JFrame() {
             } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
                 println("тут сработало исключение")
                 StatWind = ItemWindow("Статистики", false, true, false, false)
-                StatWind.setBounds(250, 250, 700, 450)
+                StatWind.setBounds(250, 250, 420, 450)
                 StatWind.addInternalFrameListener(MDIInternalFrameListener())
                 StatWind.addComponentListener(MDIResizeListener())
                 StatWind.setContentPane(StatContents)
@@ -230,16 +230,28 @@ class TestMDI : JFrame() {
 
             }
 
+            StatWind.setBounds(250, 250, 420, 350 * statList.size + 30)
+            var clearBut: JButton = JButton("Отчистить")
+            StatContents.add(clearBut)
+
             for (i in 0..statList.size-1){
+                statList[i].channelNum = i
                 var text = TextArea (GenStatistics(statList[i], GlobalSignal))
-                text.preferredSize = Dimension(200, 100)
+                text.preferredSize = Dimension(400, 200)
                 StatContents.add(text)
 
-                statList[i].Histogram.preferredSize = Dimension(200, 100)
+                statList[i].Histogram.preferredSize = Dimension(400, 105)
                 StatContents.add(statList[i].Histogram)
                 statList[i].Histogram.paint(statList[i].Histogram.graphics)
             }
             StatWind.contentPane = StatContents
+
+            clearBut.addActionListener{
+                for (i in 0..statList.size-1){
+                    statList.remove(statList[0])
+                }
+                StatContents.removeAll()
+            }
 
         }
 
@@ -774,9 +786,16 @@ class TestMDI : JFrame() {
         randomFunc3.addActionListener{
             CreateModelWindow("randomFunc3")
         }
+        superPosition1.addActionListener{
+            CreateModelWindow("superPosition1")
+        }
+        superPosition2.addActionListener{
+            CreateModelWindow("superPosition2")
+        }
 
         modelMenu.add(discretMenu)
         modelMenu.add(randomMenu)
+        modelMenu.add(superPositionMenu)
 
         val newFrame = JMenuItem("new MDI")
         val loadSignal = JMenuItem("Загрузить сигнал")

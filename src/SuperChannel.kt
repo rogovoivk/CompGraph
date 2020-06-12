@@ -270,6 +270,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
         }
         top = max/100f //неизменяемая высота канваса
         if (max < 100) top = max
+        if (top == 0f) top = 1f
         for (i in 0..CandleHight.size-1){
             CandleHight[i] /= top.toInt()
         }
@@ -285,7 +286,9 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
             var x = 0
             for (i in 0..arr.size-1){
                 //g.drawLine(x, arr[i], x, 0)
-                g.drawRect(x, 99 - arr[i], 20, 99)
+                //if (arr[i] < 50) arr[i] = 100 - arr[i]
+                if (arr[i] > 100) arr[i] = 100
+                g.drawRect(x, 100 - arr[i], 20, arr[i])
                 x += 21 //2
             }
 //            g.color = Color.BLUE
