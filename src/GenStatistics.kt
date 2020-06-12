@@ -1,14 +1,18 @@
+import java.lang.Exception
 import javax.xml.soap.Text
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 fun GenStatistics(channel : SuperChannel, GlobalSignal: Signal):String {
     var text = String()
-    text = "видимость графика на Осциллограммах от - "
-    //text += "" + GlobalSignal.vision[channel.channelNum][0] + " до - " + GlobalSignal.vision[channel.channelNum][1] + "\n"
-
     var sortedArr = GlobalSignal.arraChannels[channel.channelNum].copyOf()
     sortedArr.sort()
+    try {
+        text += "видимость графика на Осциллограммах от " + GlobalSignal.vision[channel.channelNum][0] + " до " + GlobalSignal.vision[channel.channelNum][1] + "\n"
+        //sortedArr = GlobalSignal.arraChannels[channel.channelNum].copyOf(GlobalSignal.vision[channel.channelNum][0], GlobalSignal.vision[channel.channelNum][1])
+        //sortedArr.sort()
+    }catch (e: Exception){}
+
 
     text += "Минимум = " +sortedArr[0] + "\n"
     text += "Среднее = " +sortedArr[sortedArr.size / 2] + "\n"

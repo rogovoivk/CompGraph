@@ -33,6 +33,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     var PaintFinish = 0
 
     var LineForHistogram = 5
+    var MaxForHistogram = 0f
 
 
     fun ChangePainDot(){
@@ -99,6 +100,8 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
             arrDot[i] /= top
             arrDot[i] = hight - arrDot[i]
         }
+
+        MaxForHistogram = max
     }
 
 
@@ -278,10 +281,32 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 
     }
 
+    fun GenHist(): IntArray{
+        ChangeDot()
+        var CandleHight = IntArray(LineForHistogram)
+        var SectionMax = FloatArray(LineForHistogram)
+        var sortedArrDot = arrDot.copyOf()
+        sortedArrDot.sort()
+        for (i in 1..SectionMax.size){
+            SectionMax[i-1] = (200f / LineForHistogram) * i
+        }
+        for (i in 0..sortedArrDot.size-1){
+            for (j in 0..SectionMax.size-1){
+                if (sortedArrDot[i] < SectionMax[j]){
+                    CandleHight[j]++
+                    break
+                }
+            }
+        }
+
+        return CandleHight
+    }
+
     var Histogram  = object : Canvas() {
         override
         fun paint(g: Graphics) {
-            var arr = GenHistogram()
+            //var arr = GenHistogram()
+            var arr = GenHist()
             g.color = Color.BLUE
             var x = 0
             for (i in 0..arr.size-1){
@@ -291,40 +316,6 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 g.drawRect(x, 100 - arr[i], 20, arr[i])
                 x += 21 //2
             }
-//            g.color = Color.BLUE
-//                    ChangeDot()
-//            var ArrForHistogram = arrDot.copyOf()
-//            ArrForHistogram.sort()
-//            var MaxOfSection = (arrDot.size-1) / IntervalForHistogram
-//            var x = 0
-//            var ArrOfCount = IntArray(IntervalForHistogram, {5})
-//
-//
-//
-//            for (i in 0..IntervalForHistogram-1){
-//                var j = 0
-//                var count = 0
-//                while (ArrForHistogram[j] < MaxOfSection * (i+1)){
-//                    count++
-//                    j++
-//                    if (j == arrDot.size) break
-//                }
-//                ArrOfCount[i] = count
-//                //g.drawRect(x, count, 20, 20)
-//                count = 0
-//            }
-//
-//            /** тут я придаю столбцам одыкватную высоту**/
-//            var max = 0
-//            for (i in 0..IntervalForHistogram-1){
-//                if (max < ArrOfCount[i]) max = ArrOfCount[i]
-//            }
-//            max /= (max/100) /** 100 - это высота канваса**/
-//
-//            for (i in 0..IntervalForHistogram-1){
-//                g.drawRect(x, 0, 20,  ArrOfCount[i]/max)
-//                x += 21
-//            }
         }
     }
 

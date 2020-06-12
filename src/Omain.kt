@@ -211,7 +211,7 @@ class TestMDI : JFrame() {
                 if (StatWind.isClosed) {
 
                     StatWind = ItemWindow("Статистики", false, true, false, false)
-                    StatWind.setBounds(250, 250, 700, 450)
+                    StatWind.setBounds(25, 25, 700, 450)
                     StatWind.addInternalFrameListener(MDIInternalFrameListener())
                     StatWind.addComponentListener(MDIResizeListener())
                     StatWind.setContentPane(StatContents)
@@ -221,7 +221,7 @@ class TestMDI : JFrame() {
             } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
                 println("тут сработало исключение")
                 StatWind = ItemWindow("Статистики", false, true, false, false)
-                StatWind.setBounds(250, 250, 420, 450)
+                StatWind.setBounds(25, 25, 420, 450)
                 StatWind.addInternalFrameListener(MDIInternalFrameListener())
                 StatWind.addComponentListener(MDIResizeListener())
                 StatWind.setContentPane(StatContents)
@@ -243,12 +243,16 @@ class TestMDI : JFrame() {
                 statList[i].Histogram.preferredSize = Dimension(400, 105)
                 StatContents.add(statList[i].Histogram)
                 statList[i].Histogram.paint(statList[i].Histogram.graphics)
+                println("кол во при создании окна - " + statList.size)
             }
-            StatWind.contentPane = StatContents
+            //StatWind.contentPane = StatContents
 
             clearBut.addActionListener{
                 for (i in 0..statList.size-1){
-                    statList.remove(statList[0])
+                    //statList.remove(statList[0])
+                    //statList.dropLast(1)
+                    statList = ArrayList()
+                    println("размер после удаления - " + statList.size)
                 }
                 StatContents.removeAll()
             }
@@ -262,14 +266,29 @@ class TestMDI : JFrame() {
                 StatWind.setContentPane(StatContents)
                 for (i in 0..statList.size-1){
                     //var text = textArea()
-                    StatContents.add(TextArea (GenStatistics(statList[i], GlobalSignal)))
+
                 }
             } catch (e: UninitializedPropertyAccessException) { //вот так пишут код идиоты, дай ПЯТЬ если такой же)
             }
 
+            var clearBut: JButton = JButton("Отчистить")
+            StatContents.add(clearBut)
             for (i in 0..statList.size-1){
                 //var text = textArea()
-                StatContents.add(TextArea (GenStatistics(statList[i], GlobalSignal)))
+                statList[i].channelNum = i
+                var text = TextArea (GenStatistics(statList[i], GlobalSignal))
+                text.preferredSize = Dimension(400, 200)
+                StatContents.add(text)
+
+                statList[i].Histogram.preferredSize = Dimension(400, 105)
+                StatContents.add(statList[i].Histogram)
+                statList[i].Histogram.paint(statList[i].Histogram.graphics)
+            }
+            clearBut.addActionListener{
+                for (i in 0..statList.size-1){
+                    statList.remove(statList[0])
+                }
+                StatContents.removeAll()
             }
 
         }
