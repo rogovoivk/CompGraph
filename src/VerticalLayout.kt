@@ -6,14 +6,7 @@ import java.awt.Container
 import java.awt.Dimension
 import java.awt.LayoutManager
 import javafx.scene.control.*
-import javafx.scene.Scene
-import com.sun.javafx.robot.impl.FXRobotHelper.getChildren
-import java.util.Collections.addAll
-import javafx.scene.layout.VBox
-import javafx.stage.Stage
-import java.util.Optional
 import javafx.scene.control.TextInputDialog
-import com.jfoenix.controls.*
 
 
 

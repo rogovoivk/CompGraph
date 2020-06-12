@@ -1,6 +1,5 @@
 
 
-
 import javafx.stage.FileChooser
 import javax.*
 import javax.swing.*
@@ -17,25 +16,20 @@ import java.io.File
 import java.awt.Canvas
 
 import javax.swing.JFileChooser;
-import TestMDI.ItemWindow
-import com.jfoenix.controls.JFXButton
-import kotlin.math.abs
 import javax.swing.JPanel
 import javax.swing.JMenuItem
 import javax.swing.JPopupMenu
-import com.sun.java.accessibility.util.AWTEventMonitor.addMouseListener
-import com.sun.org.apache.xml.internal.security.Init
 import javax.swing.text.StyleConstants.getComponent
 import java.awt.event.MouseAdapter
 import javax.swing.JTextField
 import javax.swing.JButton
-import jdk.nashorn.internal.runtime.GlobalFunctions.anonymous
 import java.io.FileFilter
 import java.io.ObjectInputStream
 import java.util.*
 import javax.swing.JOptionPane
 import javax.swing.JLabel
 import javax.swing.JComponent
+import javax.swing.text.*
 import javax.swing.JPasswordField
 import javax.swing.filechooser.FileNameExtensionFilter
 //import javafx.scene.input.MouseEvent
@@ -63,11 +57,7 @@ class TestMDI : JFrame() {
     internal var menuGlue = Box.createHorizontalGlue()
 
     var WhereWasFile = File(System.getProperty("user.home"))
-    fun LoadChannal (): File{ //String{
-//        val fileChooser = JFileChooser()
-//        fileChooser.setCurrentDirectory(File(System.getProperty("user.home")));
-//        val result = fileChooser.showOpenDialog(parent)
-//        val selectedFile: File = fileChooser.selectedFile
+    fun MyFileDialog (): File{ //String{
         var inputString: String = String()
         val fileChooser = JFileChooser()
         fileChooser.currentDirectory = WhereWasFile
@@ -84,6 +74,19 @@ class TestMDI : JFrame() {
         //return inputString
         return  selectedFile
 
+    }
+
+    fun SaveChannal ():File{
+        var fileChooser = JFileChooser()
+        fileChooser.setDialogTitle("Выбор директории")
+        // Определение режима - только каталог
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
+        var result: Int = fileChooser.showOpenDialog(this)
+        // Если директория выбрана, покажем ее в сообщении
+        if (result == JFileChooser.APPROVE_OPTION ) {
+            JOptionPane.showMessageDialog(this, fileChooser.getSelectedFile())
+        }
+        return fileChooser.selectedFile
     }
 
 
@@ -189,30 +192,53 @@ class TestMDI : JFrame() {
     }
 
     init {   // Создадим меню приложения
-        /**тут описываю окно моделирования */
         lateinit var modelWind: ItemWindow
+        lateinit var StatWind: ItemWindow
+        lateinit var SignalWind: ItemWindow
+        lateinit var GlobalSignal : Signal
         var heightOscillogrammGraph = 200
+        var oscillogramList: ArrayList<SuperChannel> = ArrayList()
+        var statList: ArrayList<SuperChannel> = ArrayList()
+        lateinit var oscilogramWind: ItemWindow
 
-        fun CreateModelWindow(v: String) {
-            var modelContents = JPanel(VerticalLayout())
-            modelWind = ItemWindow("Модели", true, true, true, false)
-            modelWind.setBounds(25, 25, 700, 450)
-            modelWind.addInternalFrameListener(MDIInternalFrameListener())
-            modelWind.addComponentListener(MDIResizeListener())
 
-            var sgn: Signal = InitModel(v)
-            var ch: SuperChannel = SuperChannel(sgn, 0, 600f, 200f, 0, 600, false)
-            ch.canv.preferredSize = Dimension(modelWind.width - 50, 200)
-            modelContents.add(ch.canv)
+        /**тут описываю окно статистик */
+        fun CreateStatWind(){
+            var StatContents = JPanel(VerticalLayout())
+            try {
+                //println(oscilogramWind.isClosed)
+                StatWind.setContentPane(StatContents)
+                if (StatWind.isClosed) {
 
-            modelWind.setContentPane(modelContents)
-            descPan.add(modelWind)
-            modelWind.isVisible = true
+                    StatWind = ItemWindow("Статистики", false, true, false, false)
+                    StatWind.setBounds(250, 250, 700, 450)
+                    StatWind.addInternalFrameListener(MDIInternalFrameListener())
+                    StatWind.addComponentListener(MDIResizeListener())
+                    StatWind.setContentPane(StatContents)
+                    descPan.add(StatWind)
+                    StatWind.isVisible = true
+                }
+            } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
+                println("тут сработало исключение")
+                StatWind = ItemWindow("Статистики", false, true, false, false)
+                StatWind.setBounds(250, 250, 700, 450)
+                StatWind.addInternalFrameListener(MDIInternalFrameListener())
+                StatWind.addComponentListener(MDIResizeListener())
+                StatWind.setContentPane(StatContents)
+                descPan.add(StatWind)
+                StatWind.isVisible = true
+
+            }
+
+            for (i in 0..statList.size-1){
+                //var text = textArea()
+                StatContents.add(TextArea (GenStatistics(statList[i], GlobalSignal)))
+            }
+
         }
 
+
         /**тут описываю окно осциллограмм */
-        var oscillogramList: ArrayList<SuperChannel> = ArrayList()
-        lateinit var oscilogramWind: ItemWindow
         fun createOscilogram() {
             /**PopUpListener begin*/
             class PopUpDemo(channel: SuperChannel) : JPopupMenu() {
@@ -334,12 +360,21 @@ class TestMDI : JFrame() {
                     oscillogramList[i].finish = scBar.value + scbParamArray[0]
                     //oscillogramList[i].ChangeDot(scBar.value - scbMin, scBar.value + scbMin)
                     oscillogramList[i].canv.repaint()
+
+                    /** эти строчки нужны для глобального контроля видимости
+                    for (j in 0..GlobalSignal.channels) {
+                        if(oscillogramList[i].channelNum == statList[j].channelNum) {
+                            GlobalSignal.vision[oscillogramList[i].channelNum][0] = oscillogramList[i].start
+                            GlobalSignal.vision[oscillogramList[i].channelNum][1] = oscillogramList[i].finish
+                        }
+                    }**/
                     //oscillogramList[i].canv.paint(oscillogramList[i].canv.graphics)
                 }
+                //CreateStatWind()
             }
             scBar.addAdjustmentListener(winListener)
             if ((oscillogramList[0].start == 0) or (oscillogramList[0].finish == oscillogramList[0].sgn.samplesnumber-1))
-            scBar.isVisible = false
+                scBar.isVisible = false
 
             /**Button  */
 //            var changeBut: JButton = JButton("Изменить")
@@ -409,12 +444,23 @@ class TestMDI : JFrame() {
                         }
                         if (oscillogramList[i].isPaint == false) {
                             if (oscillogramList[i].canv.mouseListeners.size-1 == 1)
-                            oscillogramList[i].canv.mouseListeners[oscillogramList[i].canv.mouseListeners.size-1] = PopClickListener(oscillogramList[i])
+                                oscillogramList[i].canv.mouseListeners[oscillogramList[i].canv.mouseListeners.size-1] = PopClickListener(oscillogramList[i])
                             //oscillogramList[i].canv.addMouseMotionListener(ml)
                             //oscillogramList[i].canv.addMouseListener(PopClickListener(oscillogramList[i]))
                         }
                         oscillogramList[i].wight = oscilogramWind.width.toFloat()
+
+                        /** эти строчки нужны для глобального контроля видимости**/
+                        for (j in 0..statList.size -1) {
+                            if(oscillogramList[i].channelNum == statList[j].channelNum) {
+                                GlobalSignal.vision[oscillogramList[i].channelNum][0] = first.text.toInt()
+                                GlobalSignal.vision[oscillogramList[i].channelNum][1] = last.text.toInt()
+                            }
+                        }
                     }
+                    CreateStatWind()
+                    println(oscillogramList[0].start)
+                    println(oscillogramList[0].finish)
                 } else {
                     println("User canceled / closed the dialog, result = $result")
                 }
@@ -425,78 +471,15 @@ class TestMDI : JFrame() {
         }
 
 
-        menuBar = JMenuBar()
-        val fileMenu = JMenu("Файл")
-        val modelMenu = JMenu("Моделирование")
-        val filtrMenu = JMenu("Фильтрация")
-        val analMenu = JMenu("Анализ")
-        val sittingMenu = JMenu("Настойка")
-        val windowMenu = JMenu("Окна")
-        val WeMenu = JMenuItem("О Разработчиках")
 
-        val discretMenu = JMenu("Дискретные")
-        val randomMenu = JMenu("Случайные")
-        val v1 = JMenuItem("1)задержанный единичный импульс")
-        val v2 = JMenuItem("2)задержанный единичный скачок ")
-        val v3 = JMenuItem("3)дискретизированная убывающая экспонента")
-        val v4 = JMenuItem("4)синусоид с заданными амплитудой ")
-        val v5 = JMenuItem("5)«меандр»")
-        val v6 = JMenuItem("6)“пила”")
-        discretMenu.add(v1)
-        discretMenu.add(v2)
-        discretMenu.add(v3)
-        discretMenu.add(v4)
-        discretMenu.add(v5)
-        discretMenu.add(v6)
-        v1.addActionListener{
-            CreateModelWindow("v1")
-        }
-        modelMenu.add(discretMenu)
-        modelMenu.add(randomMenu)
-
-
-        val newFrame = JMenuItem("new MDI")
-        val loadSignal = JMenuItem("Загрузить сигнал")
-        val oscillogramOpen = JMenuItem("Открыть осцилограммы")
-        WeMenu.addActionListener{
-            println("нажата - информация о нас")
-            val infAboutInternalFrame = ItemWindow("Делали: ", true, true, true, false)
-            infAboutInternalFrame.setBounds(25, 25, 300, 300) //width = 200
-            infAboutInternalFrame.addInternalFrameListener(MDIInternalFrameListener())
-            infAboutInternalFrame.addComponentListener(MDIResizeListener())
-            val contents = JPanel(VerticalLayout())
-            // Добавим кнопки и текстовое поле в панель
-            contents.add(JTextField("Анна Распутная"))
-            contents.add(JTextField("Маша Ярушина"))
-            contents.add(JTextField("Влад Роговой"))
-            contents.add(JTextField("Никита Баранов"))
-            contents.add(JTextField("Тина Савченко"))
-
-            // Размещаем панель в контейнере
-            infAboutInternalFrame.setContentPane(contents)
-            // Открываем окно
-            infAboutInternalFrame.isVisible = true
-            descPan.add(infAboutInternalFrame)
-            infAboutInternalFrame.topLevelAncestor
-        }
-        newFrame.addActionListener {
-            val internalFrame = ItemWindow("Can Do All", true, true, true, true)
-            internalFrame.setBounds(25, 25, 200, 100)
-            internalFrame.addInternalFrameListener(MDIInternalFrameListener())
-            internalFrame.addComponentListener(MDIResizeListener())
-
-            //internalFrame.add(JButton("Проба пера"))
-
-            descPan.add(internalFrame)
-            internalFrame.isVisible = true
-        }
-        oscillogramOpen.addActionListener {
-            createOscilogram()
-        }
-        loadSignal.addActionListener {
-            val channelFile = LoadChannal()
-            var sgn: Signal = FileToSignal(channelFile)
+        fun createSignalWind(sgn: Signal){
             var internalFrame = ItemWindow("Сигналы", true, true, false, false)
+            try {
+                SignalWind.dispose()
+            }
+            catch (e: UninitializedPropertyAccessException){}
+            SignalWind = internalFrame
+            GlobalSignal = sgn
             var hihiHeight = sgn.channels * 110
             internalFrame.setBounds(25, 25, 200, hihiHeight) //width = 200
             internalFrame.addInternalFrameListener(MDIInternalFrameListener())
@@ -514,6 +497,7 @@ class TestMDI : JFrame() {
             //////тут поп ап меню листнер
             class PopUpDemo(channel: SuperChannel) : JPopupMenu() {
                 var oscillogramItem: JMenuItem
+
                 init {
                     oscillogramItem = JMenuItem("Осцилограмма")
                     oscillogramItem.addActionListener {
@@ -529,11 +513,52 @@ class TestMDI : JFrame() {
                             }
                         }
                         else{
-                                oscillogramList.add(SuperChannel(channel.sgn, channel.channelNum, 600f, 200f, channel.start, channel.finish, true)) // надо потом поменять константные параметры константа - размер канваса
-                            }
+                            oscillogramList.add(SuperChannel(channel.sgn, channel.channelNum, 600f, 200f, channel.start, channel.finish, true)) // надо потом поменять константные параметры константа - размер канваса
+                        }
                         createOscilogram()
                     }
                     add(oscillogramItem)
+                }
+
+                var deleteItem: JMenuItem
+
+                init {
+                    deleteItem = JMenuItem("Удалить канал")
+                    deleteItem.addActionListener {
+                    }
+                    add(deleteItem)
+                }
+
+                var statItem: JMenuItem
+
+                init {
+                    statItem = JMenuItem("Статистики")
+                    statItem.addActionListener {
+                        if (statList.size > 0){
+                            if (channel.sgn == statList[0].sgn) {
+                                statList.add(SuperChannel(channel.sgn, channel.channelNum, 600f, 200f, channel.start, channel.finish, true)) // надо потом поменять константные параметры константа - размер канваса
+                            }
+                            else {
+                                statList = ArrayList()
+                                statList.add(SuperChannel(channel.sgn, channel.channelNum, 600f, 200f, channel.start, channel.finish, true)) // надо потом поменять константные параметры константа - размер канваса
+
+                            }
+                        }
+                        else{
+                            statList.add(SuperChannel(channel.sgn, channel.channelNum, 600f, 200f, channel.start, channel.finish, true)) // надо потом поменять константные параметры константа - размер канваса
+                        }
+                        CreateStatWind()
+                    }
+                    add(statItem)
+                }
+
+                var saveHowItem: JMenuItem
+                init {
+                    saveHowItem = JMenuItem("Сохранить как...")
+                    saveHowItem.addActionListener {
+                        SignalToFile(MyFileDialog(), GlobalSignal)
+                    }
+                    add(saveHowItem)
                 }
 
                 var anItem: JMenuItem
@@ -599,6 +624,173 @@ class TestMDI : JFrame() {
             internalFrame.size = Dimension(230, 700)
             internalFrame.isVisible = true
             internalFrame.setLocation(1150,1)
+        }
+
+        fun CreateModelWindow(v: String) {
+            lateinit var sgn: Signal
+            try {
+                sgn = InitModel(v, GlobalSignal.starttime, GlobalSignal.startdate, GlobalSignal.samplingrate, GlobalSignal.samplesnumber.toString())
+            }
+            catch (e: UninitializedPropertyAccessException){
+                sgn = InitModel(v, "00:00:00", "01-01-2020", "1", "10000")
+
+            }
+
+            try {
+                if ((sgn.startdate == GlobalSignal.startdate) && (sgn.starttime == GlobalSignal.starttime) && (sgn.samplesnumber == GlobalSignal.samplesnumber) && (sgn.samplingrate == GlobalSignal.samplingrate)) {
+                    var array = Array(GlobalSignal.channels + 1, { Array(sgn.samplesnumber, { 0f }) })
+                    var channelsnames = arrayOfNulls<String>(GlobalSignal.channels + 1)
+                    GlobalSignal.channels += 1
+                    for (i in 0..GlobalSignal.channels - 2) {
+                        channelsnames[i] = GlobalSignal.channelsnames[i]
+                    }
+                    channelsnames[GlobalSignal.channels - 1] = sgn.channelsnames[0]
+                    GlobalSignal.channelsnames = channelsnames
+
+                    for (i in 0..GlobalSignal.samplesnumber - 1) {
+                        for (j in 0..GlobalSignal.channels - 1) {
+                            if (j == GlobalSignal.channels - 1) {
+                                array[j][i] = sgn.arraChannels[0][i]
+                            } else
+                                array[j][i] = GlobalSignal.arraChannels[j][i]
+                        }
+                    }
+                    GlobalSignal.arraChannels = array
+                } else
+                    GlobalSignal = sgn
+            }
+            catch (e: UninitializedPropertyAccessException){
+                GlobalSignal = sgn
+            }
+
+            createSignalWind(GlobalSignal)
+        }
+
+
+        menuBar = JMenuBar()
+        val fileMenu = JMenu("Файл")
+        val modelMenu = JMenu("Моделирование")
+        val filtrMenu = JMenu("Фильтрация")
+        val analMenu = JMenu("Анализ")
+        val sittingMenu = JMenu("Настойка")
+        val windowMenu = JMenu("Окна")
+        val WeMenu = JMenuItem("О Разработчиках")
+
+        val discretMenu = JMenu("Дискретные")
+        val randomMenu = JMenu("Случайные")
+        val v1 = JMenuItem("1)задержанный единичный импульс")
+        val v2 = JMenuItem("2)задержанный единичный скачок ")
+        val v3 = JMenuItem("3)дискретизированная убывающая экспонента")
+        val v4 = JMenuItem("4)синусоид с заданными амплитудой ")
+        val v5 = JMenuItem("5)«меандр»")
+        val v6 = JMenuItem("6)“пила”")
+        val v7 = JMenuItem("7)“экспоненциальная огибающая ”")
+        val v8 = JMenuItem("8)балансная огибающая")
+        val v9 = JMenuItem("9)тональная огибающая")
+
+        val randomFunc1 = JMenuItem("1)сигнал белого шума, равномерно распределенного в интервале [a,b]")
+        val randomFunc2 = JMenuItem("2)сигнал белого шума, распределенного по нормальному закону с заданными средним и дисперсией")
+        val randomFunc3 = JMenuItem("3)случайный сигнал авторегрессии-скользящего среднего порядка (p,q) – АРСС (p,q)")
+
+        discretMenu.add(v1)
+        discretMenu.add(v2)
+        discretMenu.add(v3)
+        discretMenu.add(v4)
+        discretMenu.add(v5)
+        discretMenu.add(v6)
+        discretMenu.add(v7)
+        discretMenu.add(v8)
+        discretMenu.add(v9)
+
+        randomMenu.add(randomFunc1)
+        randomMenu.add(randomFunc2)
+        randomMenu.add(randomFunc3)
+
+        v1.addActionListener{
+            CreateModelWindow("v1")
+        }
+        v2.addActionListener{
+            CreateModelWindow("v2")
+        }
+        v3.addActionListener{
+            CreateModelWindow("v3")
+        }
+        v4.addActionListener{
+            CreateModelWindow("v4")
+        }
+        v5.addActionListener{
+            CreateModelWindow("v5")
+        }
+        v6.addActionListener{
+            CreateModelWindow("v6")
+        }
+        v7.addActionListener{
+            CreateModelWindow("v7")
+        }
+        v8.addActionListener{
+            CreateModelWindow("v8")
+        }
+        v9.addActionListener{
+            CreateModelWindow("v9")
+        }
+        randomFunc1.addActionListener{
+            CreateModelWindow("randomFunc1")
+        }
+        randomFunc2.addActionListener{
+            CreateModelWindow("randomFunc2")
+        }
+        randomFunc3.addActionListener{
+            CreateModelWindow("randomFunc3")
+        }
+
+        modelMenu.add(discretMenu)
+        modelMenu.add(randomMenu)
+
+        val newFrame = JMenuItem("new MDI")
+        val loadSignal = JMenuItem("Загрузить сигнал")
+        val oscillogramOpen = JMenuItem("Открыть осцилограммы")
+        WeMenu.addActionListener{
+            println("нажата - информация о нас")
+            val infAboutInternalFrame = ItemWindow("Делали: ", true, true, true, false)
+            infAboutInternalFrame.setBounds(25, 25, 300, 300) //width = 200
+            infAboutInternalFrame.addInternalFrameListener(MDIInternalFrameListener())
+            infAboutInternalFrame.addComponentListener(MDIResizeListener())
+            val contents = JPanel(VerticalLayout())
+            // Добавим кнопки и текстовое поле в панель
+            contents.add(JTextField("Анна Распутная"))
+            contents.add(JTextField("Маша Ярушина"))
+            contents.add(JTextField("Влад Роговой"))
+            contents.add(JTextField("Никита Баранов"))
+            contents.add(JTextField("Валентина Савченко"))
+
+            // Размещаем панель в контейнере
+            infAboutInternalFrame.setContentPane(contents)
+            // Открываем окно
+            infAboutInternalFrame.isVisible = true
+            descPan.add(infAboutInternalFrame)
+            infAboutInternalFrame.topLevelAncestor
+        }
+        newFrame.addActionListener {
+            val internalFrame = ItemWindow("Can Do All", true, true, true, true)
+            internalFrame.setBounds(25, 25, 200, 100)
+            internalFrame.addInternalFrameListener(MDIInternalFrameListener())
+            internalFrame.addComponentListener(MDIResizeListener())
+
+            //internalFrame.add(JButton("Проба пера"))
+
+            descPan.add(internalFrame)
+            internalFrame.isVisible = true
+        }
+        oscillogramOpen.addActionListener {
+            createOscilogram()
+        }
+        loadSignal.addActionListener {
+            val channelFile = MyFileDialog()
+            var sgn: Signal = FileToSignal(channelFile)
+
+
+
+            createSignalWind(sgn)
         }
 
         fileMenu.add(loadSignal) //newFrame,
@@ -676,4 +868,3 @@ class TestMDI : JFrame() {
         }
     }
 }
-

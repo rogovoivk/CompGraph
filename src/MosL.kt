@@ -97,7 +97,7 @@ class MosL(channel: ArrayList<SuperChannel>, scBar_: JScrollBar, scbParamArray_:
 
     override
     fun mouseReleased(e: MouseEvent) {
-            /** вариант 1**/
+        /** вариант 1**/
 //            println("Released  " + e.getX() + "  " + e.getY())
 //            for (i in 0..chan.size - 1) {
 //                chan[i].PaintFinish = e.getX()
@@ -119,7 +119,7 @@ class MosL(channel: ArrayList<SuperChannel>, scBar_: JScrollBar, scbParamArray_:
 //                onDrag = false
 
 
-            /** вариант 2**/
+        /** вариант 2**/
         for (i in 0..chan.size - 1) {
             chan[i].PaintFinish = e.getX()
             chan[i].ChangePainDot()

@@ -9,24 +9,25 @@ class Signal(chan: Int, samplesnumber_: Int, samplingrate_: String, startdate_: 
     var startdate: String = startdate_
     var starttime: String = starttime_
     var arraChannels: Array<Array<Float>> = arraChannels
-    var from: String = "Файл: " + from_                                               //это источник
+    var from: String = from_                                               //это источник
     var channelsnames: Array<String?> = channelsnames_
     //var channelsnames = emptyArray<String>()
+    var vision: Array<Array<Int>> = Array(channels, { arrayOf(0, samplesnumber) })
 
 
-    fun WhatTime(dot: Int): String{
+    fun WhatTime(dot: Int, samplerate_: Float): String{
 //        var h1 = starttime[0].toString().toInt() * 10 + starttime[1].toString().toInt()
 //        var h2 = h1.toInt()
-        var h = starttime[0].toString().toInt() * 10 + starttime[1].toString().toInt()
-        var m = starttime[3].toString().toInt() * 10 + starttime[4].toString().toInt()
-        var s = starttime[6].toString().toInt() * 10 + starttime[7].toString().toInt()
+        var h = (starttime[0].toString().toInt() * 10 + starttime[1].toString().toInt()).toFloat()
+        var m = (starttime[3].toString().toInt() * 10 + starttime[4].toString().toInt()).toFloat()
+        var s = (starttime[6].toString().toInt() * 10 + starttime[7].toString().toInt()).toFloat()
         for (i in 0..dot){
-            s++
-            if (s == 60){
-                s=0
+            s += samplerate_
+            if (s >= 60){
+                s -= 60
                 m++
-                if(m == 60){
-                    m=0
+                if(m == 60f){
+                    m = 0f
                     h++
                 }
             }

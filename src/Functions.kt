@@ -2,8 +2,8 @@ import java.awt.Canvas
 import java.awt.Graphics
 import java.io.File
 import java.util.*
-import javax.swing.JButton
-import javax.swing.JFileChooser
+
+
 
 //функции
 
@@ -13,7 +13,8 @@ fun FileToSignal(f: File) : Signal{
     val samplesNumber: Int = listSTR[3].toInt()
     val samplingRate: String = listSTR[5].toString()
     val startDate: String = listSTR[7]
-    val startTime: String = listSTR[9]
+    var startTime: String = listSTR[9]
+    startTime = (startTime[0].toString() + startTime[1].toString() + startTime[2].toString() + startTime[3].toString() + startTime[4].toString() + startTime[5].toString() + startTime[6].toString() + startTime[7].toString()).toString()
     var channelsnames = arrayOfNulls<String>(channelsNumber)
     channelsnames[0] = ""
     var cout: Int = 0
@@ -49,6 +50,29 @@ fun FileToSignal(f: File) : Signal{
 
     var sgn: Signal = Signal(channelsNumber, samplesNumber, samplingRate, startDate, startTime, arraChannels, f.name, channelsnames)
     return sgn
+}
+
+fun SignalToFile (f: File, sgn: Signal){
+    val text = "Hello Gold!"
+    var str = String()
+    str = "# channels number \n" + sgn.channels + "\n# samples number\n" + sgn.samplesnumber + "\n# sampling rate\n" + sgn.samplingrate + "\n# start date\n" + sgn.startdate + "\n# start time\n" +sgn.starttime + ".000\n# channels names\n"
+    for (i in 0..sgn.channels - 1){
+        str += sgn.channelsnames[i]
+        if (i != sgn.channels - 1) str += ";"
+        else str += "\n"
+    }
+    for (i in 0..sgn.samplesnumber-1) {
+        for(j in 0..sgn.channels-1) {
+            str += sgn.arraChannels[j][i]
+            //if (j != sgn.channels-1) str += " "
+            str += " "
+        }
+        str += "\n"
+    }
+    f.writeText(str)
+    // запись по символам
+//    f.writeText("\n")
+//    f.writeText("E")
 }
 
 
