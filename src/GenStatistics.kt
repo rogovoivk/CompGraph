@@ -1,3 +1,5 @@
+import javax.xml.soap.Text
+
 fun GenStatistics(channel : SuperChannel, GlobalSignal: Signal):String {
     var text = String()
     text = "видимость графика на Осциллограммах от - "
