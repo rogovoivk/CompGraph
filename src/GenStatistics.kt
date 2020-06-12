@@ -45,6 +45,18 @@ fun GenStatistics(channel : SuperChannel, GlobalSignal: Signal):String {
 
     text += "Коэффициент эксцесса = " + excessRatio + "\n"
 
+    val quantOne = (0.05 * sortedArr.size).toInt()
+
+    text += "Квантиль порядка 0.05 = " + sortedArr[quantOne] + "\n"
+
+    val quantTwo = (0.95 * sortedArr.size).toInt()
+
+    text += "Квантиль порядка 0.95 = " + sortedArr[quantTwo] + "\n"
+
+    val median = sortedArr[(sortedArr.size / 2).toInt()]
+
+    text += "Медиана = " + median + "\n"
+
     return text
 }
 
