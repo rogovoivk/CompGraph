@@ -10,6 +10,7 @@ import java.awt.Font.BOLD
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.awt.event.MouseMotionListener
+import java.util.ArrayList
 
 
 class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float, start_: Int, finish_: Int, isCoordinates_: Boolean = false ){
@@ -30,6 +31,8 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     var isPaint = false
     var PaintStart = 0
     var PaintFinish = 0
+
+    var LineForHistogram = 5
 
 
     fun ChangePainDot(){
@@ -190,6 +193,135 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 }
             }
 
+        }
+    }
+
+
+    fun GenHistogram(): IntArray{
+
+        if((finish - start) < wight){
+            println("ЗАДАННА СУПЕР МАЛЕНЬКАЯ ОБЛАСТЬ")
+            isSmallVision = true
+        }
+        else{isSmallVision = false}
+
+        var zero = 0
+        var length = arrDot.size-1
+        if (LocalMaxMin == true){
+            zero = start
+            length = finish-1
+        }
+
+
+        arrDot = sgn.arraChannels[channelNum].copyOf()//.copy(sgn.arraChannels[channelNum])// = sgn.arraChannels[channelNum]
+        var max: Float = arrDot[1]
+        var min: Float = arrDot[1]
+        var top: Float = hight
+        var right: Float = 0f
+        for (i in zero..length) {
+            if (max < arrDot[i]) {
+                max = arrDot[i]
+            }
+            if (min > arrDot[i]) {
+                min = arrDot[i]
+            }
+        }
+
+        if (min < 0 ){
+            for (i in zero..length) {
+                arrDot[i] += abs(min)
+            }
+            max += abs(min)
+            min = 0f
+
+        }
+        else {
+            for (i in zero..length) {
+                arrDot[i] -= min
+            }
+            max -= min
+            min = 0f
+        }
+        top = max/top
+        for (i in zero..length){
+            arrDot[i] /= top
+            arrDot[i] = hight - arrDot[i]
+        }
+
+        /** тут пересоритовываю **/
+        var sortedArrDot = arrDot.copyOf()
+        sortedArrDot.sort()
+        max = sortedArrDot[sortedArrDot.size-1]
+        var maxOfInterval = sortedArrDot[(arrDot.size)/LineForHistogram]
+        var j = 1
+        var CandleHight = IntArray(LineForHistogram)
+        var count = 0
+        for (i in 0..sortedArrDot.size-1){
+            if ((sortedArrDot[i] > (max/LineForHistogram)*j) or ((i == sortedArrDot.size-1) and (sortedArrDot[i] == (max/LineForHistogram)*j))){
+                CandleHight[j-1] = count
+                j++
+                count = 0
+            }
+            count++
+        }
+        max = 0f
+        for (i in 0..CandleHight.size-1){
+            if (max < CandleHight[i]) max = CandleHight[i].toFloat()
+        }
+        top = max/100f //неизменяемая высота канваса
+        if (max < 100) top = max
+        for (i in 0..CandleHight.size-1){
+            CandleHight[i] /= top.toInt()
+        }
+        return CandleHight
+
+    }
+
+    var Histogram  = object : Canvas() {
+        override
+        fun paint(g: Graphics) {
+            var arr = GenHistogram()
+            g.color = Color.BLUE
+            var x = 0
+            for (i in 0..arr.size-1){
+                //g.drawLine(x, arr[i], x, 0)
+                g.drawRect(x, 99 - arr[i], 20, 99)
+                x += 21 //2
+            }
+//            g.color = Color.BLUE
+//                    ChangeDot()
+//            var ArrForHistogram = arrDot.copyOf()
+//            ArrForHistogram.sort()
+//            var MaxOfSection = (arrDot.size-1) / IntervalForHistogram
+//            var x = 0
+//            var ArrOfCount = IntArray(IntervalForHistogram, {5})
+//
+//
+//
+//            for (i in 0..IntervalForHistogram-1){
+//                var j = 0
+//                var count = 0
+//                while (ArrForHistogram[j] < MaxOfSection * (i+1)){
+//                    count++
+//                    j++
+//                    if (j == arrDot.size) break
+//                }
+//                ArrOfCount[i] = count
+//                //g.drawRect(x, count, 20, 20)
+//                count = 0
+//            }
+//
+//            /** тут я придаю столбцам одыкватную высоту**/
+//            var max = 0
+//            for (i in 0..IntervalForHistogram-1){
+//                if (max < ArrOfCount[i]) max = ArrOfCount[i]
+//            }
+//            max /= (max/100) /** 100 - это высота канваса**/
+//
+//            for (i in 0..IntervalForHistogram-1){
+//                g.drawRect(x, 0, 20,  ArrOfCount[i]/max)
+//                x += 21
+//            }
         }
     }
 

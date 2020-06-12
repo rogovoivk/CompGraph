@@ -231,6 +231,31 @@ class TestMDI : JFrame() {
             }
 
             for (i in 0..statList.size-1){
+                var text = TextArea (GenStatistics(statList[i], GlobalSignal))
+                text.preferredSize = Dimension(200, 100)
+                StatContents.add(text)
+
+                statList[i].Histogram.preferredSize = Dimension(200, 100)
+                StatContents.add(statList[i].Histogram)
+                statList[i].Histogram.paint(statList[i].Histogram.graphics)
+            }
+            StatWind.contentPane = StatContents
+
+        }
+
+        fun UpdateStatWind(){
+            var StatContents = JPanel(VerticalLayout())
+            try {
+                //println(oscilogramWind.isClosed)
+                StatWind.setContentPane(StatContents)
+                for (i in 0..statList.size-1){
+                    //var text = textArea()
+                    StatContents.add(TextArea (GenStatistics(statList[i], GlobalSignal)))
+                }
+            } catch (e: UninitializedPropertyAccessException) { //вот так пишут код идиоты, дай ПЯТЬ если такой же)
+            }
+
+            for (i in 0..statList.size-1){
                 //var text = textArea()
                 StatContents.add(TextArea (GenStatistics(statList[i], GlobalSignal)))
             }
@@ -361,16 +386,16 @@ class TestMDI : JFrame() {
                     //oscillogramList[i].ChangeDot(scBar.value - scbMin, scBar.value + scbMin)
                     oscillogramList[i].canv.repaint()
 
-                    /** эти строчки нужны для глобального контроля видимости
-                    for (j in 0..GlobalSignal.channels) {
+                    /** эти строчки нужны для глобального контроля видимости**/
+                    for (j in 0..statList.size -1) {
                         if(oscillogramList[i].channelNum == statList[j].channelNum) {
                             GlobalSignal.vision[oscillogramList[i].channelNum][0] = oscillogramList[i].start
                             GlobalSignal.vision[oscillogramList[i].channelNum][1] = oscillogramList[i].finish
                         }
-                    }**/
+                    }
                     //oscillogramList[i].canv.paint(oscillogramList[i].canv.graphics)
                 }
-                //CreateStatWind()
+                UpdateStatWind()
             }
             scBar.addAdjustmentListener(winListener)
             if ((oscillogramList[0].start == 0) or (oscillogramList[0].finish == oscillogramList[0].sgn.samplesnumber-1))
@@ -458,7 +483,7 @@ class TestMDI : JFrame() {
                             }
                         }
                     }
-                    CreateStatWind()
+                    UpdateStatWind()
                     println(oscillogramList[0].start)
                     println(oscillogramList[0].finish)
                 } else {
@@ -614,7 +639,7 @@ class TestMDI : JFrame() {
             val contents = JPanel(VerticalLayout())
             for (i in 0..sgn.channels-1){
                 arrChannel[i].canv.preferredSize = Dimension(200, 100)
-                contents.add(arrChannel[i]?.canv)
+                contents.add(arrChannel[i].canv)
                 arrChannel[i].canv.addMouseListener(PopClickListener(arrChannel[i]))
             }
             contents.mouseListeners
@@ -678,6 +703,8 @@ class TestMDI : JFrame() {
 
         val discretMenu = JMenu("Дискретные")
         val randomMenu = JMenu("Случайные")
+        val superPositionMenu = JMenu("Суперпозиция")
+
         val v1 = JMenuItem("1)задержанный единичный импульс")
         val v2 = JMenuItem("2)задержанный единичный скачок ")
         val v3 = JMenuItem("3)дискретизированная убывающая экспонента")
@@ -687,10 +714,15 @@ class TestMDI : JFrame() {
         val v7 = JMenuItem("7)“экспоненциальная огибающая ”")
         val v8 = JMenuItem("8)балансная огибающая")
         val v9 = JMenuItem("9)тональная огибающая")
+        val superPosition1 = JMenuItem("Линейная суперпозиция")
+        val superPosition2 = JMenuItem("Мультипликативная суперпозиция")
 
         val randomFunc1 = JMenuItem("1)сигнал белого шума, равномерно распределенного в интервале [a,b]")
         val randomFunc2 = JMenuItem("2)сигнал белого шума, распределенного по нормальному закону с заданными средним и дисперсией")
         val randomFunc3 = JMenuItem("3)случайный сигнал авторегрессии-скользящего среднего порядка (p,q) – АРСС (p,q)")
+
+        superPositionMenu.add(superPosition1)
+        superPositionMenu.add(superPosition2)
 
         discretMenu.add(v1)
         discretMenu.add(v2)
