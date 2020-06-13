@@ -200,6 +200,7 @@ class TestMDI : JFrame() {
         var oscillogramList: ArrayList<SuperChannel> = ArrayList()
         var statList: ArrayList<SuperChannel> = ArrayList()
         lateinit var oscilogramWind: ItemWindow
+        var MainLineForHistogram = 5
 
 
         /**тут описываю окно статистик */
@@ -235,11 +236,12 @@ class TestMDI : JFrame() {
             StatContents.add(clearBut)
 
             for (i in 0..statList.size-1){
-                statList[i].channelNum = i
+                //statList[i].channelNum = i
                 var text = TextArea (GenStatistics(statList[i], GlobalSignal))
                 text.preferredSize = Dimension(400, 200)
                 StatContents.add(text)
 
+                statList[i].LineForHistogram = MainLineForHistogram
                 statList[i].Histogram.preferredSize = Dimension(400, 105)
                 StatContents.add(statList[i].Histogram)
                 statList[i].Histogram.paint(statList[i].Histogram.graphics)
@@ -731,6 +733,24 @@ class TestMDI : JFrame() {
         val sittingMenu = JMenu("Настойка")
         val windowMenu = JMenu("Окна")
         val WeMenu = JMenuItem("О Разработчиках")
+
+        val G_K = JMenuItem("Кол-во разбиений Гистограммы")
+        analMenu.add(G_K)
+        G_K.addActionListener {
+            val K = JTextField(MainLineForHistogram)
+
+            val inputs = arrayOf<JComponent>(
+                JLabel("Введите кол-во разбиений"),
+                K
+            )
+            val result =
+                JOptionPane.showConfirmDialog(null, inputs, "Кол-во разбиений", JOptionPane.PLAIN_MESSAGE)
+            if (result == JOptionPane.OK_OPTION) {
+                MainLineForHistogram = K.text.toInt()
+            } else {
+                println("User canceled / closed the dialog, result = $result")
+            }
+        }
 
         val discretMenu = JMenu("Дискретные")
         val randomMenu = JMenu("Случайные")
