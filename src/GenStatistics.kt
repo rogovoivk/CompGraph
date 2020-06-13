@@ -9,9 +9,14 @@ fun GenStatistics(channel : SuperChannel, GlobalSignal: Signal):String {
     sortedArr.sort()
     try {
         text += "видимость графика на Осциллограммах от " + GlobalSignal.vision[channel.channelNum][0] + " до " + GlobalSignal.vision[channel.channelNum][1] + "\n"
-        //sortedArr = GlobalSignal.arraChannels[channel.channelNum].copyOf(GlobalSignal.vision[channel.channelNum][0], GlobalSignal.vision[channel.channelNum][1])
-        //sortedArr.sort()
-    }catch (e: Exception){}
+//        sortedArr = Array<Float>(GlobalSignal.vision[channel.channelNum][1] - GlobalSignal.vision[channel.channelNum][0])
+//        for (i in 0..(GlobalSignal.vision[channel.channelNum][1] - GlobalSignal.vision[channel.channelNum][0])){
+//            sortedArr[i] = GlobalSignal.arraChannels[channel.channelNum][i + GlobalSignal.vision[channel.channelNum][0]]
+//        }
+    }catch (e: Exception){
+//        sortedArr = GlobalSignal.arraChannels[channel.channelNum].copyOf()
+//        sortedArr.sort()
+    }
 
 
     text += "Минимум = " +sortedArr[0] + "\n"

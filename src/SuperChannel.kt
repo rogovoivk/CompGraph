@@ -200,104 +200,23 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     }
 
 
-    fun GenHistogram(): IntArray{
-
-        if((finish - start) < wight){
-            println("ЗАДАННА СУПЕР МАЛЕНЬКАЯ ОБЛАСТЬ")
-            isSmallVision = true
-        }
-        else{isSmallVision = false}
-
-        var zero = 0
-        var length = arrDot.size-1
-        if (LocalMaxMin == true){
-            zero = start
-            length = finish-1
-        }
-
-
-        arrDot = sgn.arraChannels[channelNum].copyOf()//.copy(sgn.arraChannels[channelNum])// = sgn.arraChannels[channelNum]
-        var max: Float = arrDot[1]
-        var min: Float = arrDot[1]
-        var top: Float = hight
-        var right: Float = 0f
-        for (i in zero..length) {
-            if (max < arrDot[i]) {
-                max = arrDot[i]
-            }
-            if (min > arrDot[i]) {
-                min = arrDot[i]
-            }
-        }
-
-        if (min < 0 ){
-            for (i in zero..length) {
-                arrDot[i] += abs(min)
-            }
-            max += abs(min)
-            min = 0f
-
-        }
-        else {
-            for (i in zero..length) {
-                arrDot[i] -= min
-            }
-            max -= min
-            min = 0f
-        }
-        top = max/top
-        for (i in zero..length){
-            arrDot[i] /= top
-            arrDot[i] = hight - arrDot[i]
-        }
-
-        /** тут пересоритовываю **/
-        var sortedArrDot = arrDot.copyOf()
-        sortedArrDot.sort()
-        max = sortedArrDot[sortedArrDot.size-1]
-        var maxOfInterval = sortedArrDot[(arrDot.size)/LineForHistogram]
-        var j = 1
-        var CandleHight = IntArray(LineForHistogram)
-        var count = 0
-        for (i in 0..sortedArrDot.size-1){
-            if ((sortedArrDot[i] > (max/LineForHistogram)*j) or ((i == sortedArrDot.size-1) and (sortedArrDot[i] == (max/LineForHistogram)*j))){
-                CandleHight[j-1] = count
-                j++
-                count = 0
-            }
-            count++
-        }
-        max = 0f
-        for (i in 0..CandleHight.size-1){
-            if (max < CandleHight[i]) max = CandleHight[i].toFloat()
-        }
-        top = max/100f //неизменяемая высота канваса
-        if (max < 100) top = max
-        if (top == 0f) top = 1f
-        for (i in 0..CandleHight.size-1){
-            CandleHight[i] /= top.toInt()
-        }
-        return CandleHight
-
-    }
 
     fun GenHist(): IntArray{
         ChangeDot()
         var CandleHight = IntArray(LineForHistogram)
-        var SectionMax = FloatArray(LineForHistogram)
-        var sortedArrDot = arrDot.copyOf()
-        sortedArrDot.sort()
-        for (i in 1..SectionMax.size){
-            SectionMax[i-1] = (200f / LineForHistogram) * i
-        }
-        for (i in 0..sortedArrDot.size-1){
-            for (j in 0..SectionMax.size-1){
-                if (sortedArrDot[i] < SectionMax[j]){
-                    CandleHight[j]++
-                    break
+
+        for (i in 0..arrDot.size-1){
+            for (j in 0..LineForHistogram-1) {
+                if ((j == 0) and (arrDot[i] < (200 / LineForHistogram))){CandleHight[0]++}
+                else{
+                    if((arrDot[i] < ((200 / LineForHistogram) * j)) and (arrDot[i] > ((200 / LineForHistogram) * (j - 1))))
+                        {CandleHight[j-1]++}
+                    if ((j == LineForHistogram - 1) and (arrDot[j] > (LineForHistogram- 200)))
+                        {CandleHight[j]++}
                 }
             }
         }
+
 
         return CandleHight
     }
@@ -309,6 +228,16 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
             var arr = GenHist()
             g.color = Color.BLUE
             var x = 0
+            var max = 0
+            for (i in 0..arr.size-1){
+                if (max < arr[i]) max = arr[i]
+            }
+            var top = max/200
+            for (i in 0..arr.size-1){
+                arr[i] /= top
+            }
+
+
             for (i in 0..arr.size-1){
                 //g.drawLine(x, arr[i], x, 0)
                 //if (arr[i] < 50) arr[i] = 100 - arr[i]
