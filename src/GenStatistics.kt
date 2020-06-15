@@ -23,6 +23,13 @@ fun GenStatistics(channel : SuperChannel, GlobalSignal: Signal):String {
     text += "Среднее = " +sortedArr[sortedArr.size / 2] + "\n"
     text += "Максимум= " +sortedArr[sortedArr.size-1] + "\n"
 
+//    var sum = 0f
+//    for (i in 0..sortedArr.size){
+//        sum += sortedArr[i]
+//    }
+//    sum /= sortedArr.size
+//    text += "Среднее = " +sum + "\n"
+
     ///TEST///
     val testArr = arrayOf(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)
     println(getAverage(testArr))

@@ -242,7 +242,7 @@ class TestMDI : JFrame() {
                 StatContents.add(text)
 
                 statList[i].LineForHistogram = MainLineForHistogram
-                statList[i].Histogram.preferredSize = Dimension(400, 105)
+                statList[i].Histogram.preferredSize = Dimension(400, 106)
                 StatContents.add(statList[i].Histogram)
                 statList[i].Histogram.paint(statList[i].Histogram.graphics)
                 println("кол во при создании окна - " + statList.size)

@@ -34,6 +34,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 
     var LineForHistogram = 5
     var MaxForHistogram = 0f
+    var hightOfHist = 200//200
 
 
     fun ChangePainDot(){
@@ -204,14 +205,36 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     fun GenHist(): IntArray{
         ChangeDot()
         var CandleHight = IntArray(LineForHistogram)
+        var cloneArrDor = arrDot.copyOf()
 
-        for (i in 0..arrDot.size-1){
+        var min = cloneArrDor[0]
+//        var max = 0f
+//        for (i in 0..cloneArrDor.size-1){
+//            if (max < cloneArrDor[i]) max = cloneArrDor[i]
+//            if (min > cloneArrDor[i]) min = cloneArrDor[i]
+//        }
+//        if (min < 0){
+//            for (i in 0..cloneArrDor.size-1){
+//                cloneArrDor[i] += min
+//            }
+//        }
+//        if (min > 0){
+//            for (i in 0..cloneArrDor.size-1){
+//                cloneArrDor[i] -= min
+//            }
+//        }
+        //var top = max/hightOfHist
+//        for (i in 0..cloneArrDor.size-1){
+//            cloneArrDor[i] /= top
+//        }
+
+        for (i in 0..cloneArrDor.size-1){
             for (j in 0..LineForHistogram-1) {
-                if ((j == 0) and (arrDot[i] < (200 / LineForHistogram))){CandleHight[0]++}
+                if ((j == 0) and (cloneArrDor[i] < (hightOfHist / LineForHistogram))){CandleHight[0]++}
                 else{
-                    if((arrDot[i] < ((200 / LineForHistogram) * j)) and (arrDot[i] > ((200 / LineForHistogram) * (j - 1))))
+                    if((cloneArrDor[i] < ((hightOfHist / LineForHistogram) * j)) and (cloneArrDor[i] > ((hightOfHist / LineForHistogram) * (j - 1))))
                         {CandleHight[j-1]++}
-                    if ((j == LineForHistogram - 1) and (arrDot[j] > (LineForHistogram- 200)))
+                    if ((j == LineForHistogram - 1) and (cloneArrDor[i] > (hightOfHist - (hightOfHist / LineForHistogram))))
                         {CandleHight[j]++}
                 }
             }
@@ -224,7 +247,6 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     var Histogram  = object : Canvas() {
         override
         fun paint(g: Graphics) {
-            //var arr = GenHistogram()
             var arr = GenHist()
             g.color = Color.BLUE
             var x = 0
@@ -232,7 +254,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
             for (i in 0..arr.size-1){
                 if (max < arr[i]) max = arr[i]
             }
-            var top = max/200
+            var top = max/100
             for (i in 0..arr.size-1){
                 arr[i] /= top
             }
@@ -241,7 +263,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
             for (i in 0..arr.size-1){
                 //g.drawLine(x, arr[i], x, 0)
                 //if (arr[i] < 50) arr[i] = 100 - arr[i]
-                if (arr[i] > 100) arr[i] = 100
+                //if (arr[i] > 100) arr[i] = 100
                 g.drawRect(x, 100 - arr[i], 20, arr[i])
                 x += 21 //2
             }
