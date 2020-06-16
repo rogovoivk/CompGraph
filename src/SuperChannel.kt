@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.awt.event.MouseMotionListener
 import java.util.ArrayList
+import kotlin.math.ceil
 
 
 class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float, start_: Int, finish_: Int, isCoordinates_: Boolean = false ){
@@ -24,6 +25,8 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     var isCoordinates = isCoordinates_
     var isPaintApproach = true
     var LocalMaxMin = false
+
+    val histContainerWidth = 350 //не нашла, как получить длину контейнера для гистограммы. Опытным путем выбрала произвольную чиселку
 
     var isSmallVision = false
 
@@ -207,25 +210,6 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
         var cloneArrDor = arrDot.copyOf()
 
         var min = cloneArrDor[0]
-//        var max = 0f
-//        for (i in 0..cloneArrDor.size-1){
-//            if (max < cloneArrDor[i]) max = cloneArrDor[i]
-//            if (min > cloneArrDor[i]) min = cloneArrDor[i]
-//        }
-//        if (min < 0){
-//            for (i in 0..cloneArrDor.size-1){
-//                cloneArrDor[i] += min
-//            }
-//        }
-//        if (min > 0){
-//            for (i in 0..cloneArrDor.size-1){
-//                cloneArrDor[i] -= min
-//            }
-//        }
-        //var top = max/hightOfHist
-//        for (i in 0..cloneArrDor.size-1){
-//            cloneArrDor[i] /= top
-//        }
 
         for (i in 0..cloneArrDor.size-1){
             for (j in 0..LineForHistogram - 1) {
@@ -259,18 +243,22 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
             for (i in 0..arr.size-1){
                 if (max < arr[i]) max = arr[i]
             }
-            var top = max/100
+            var top = ceil(max/100f).toInt()
             for (i in 0..arr.size-1){
                 arr[i] /= top
             }
 
-
+            val a = this.width
+            var histBarWidth = 20
+            if (20f * LineForHistogram > histContainerWidth) {
+                histBarWidth = histContainerWidth / LineForHistogram
+            }
             for (i in 0..arr.size-1){
                 //g.drawLine(x, arr[i], x, 0)
                 //if (arr[i] < 50) arr[i] = 100 - arr[i]
                 //if (arr[i] > 100) arr[i] = 100
-                g.drawRect(x, 100 - arr[i], 20, arr[i])
-                x += 21 //2
+                g.drawRect(x, 100 - arr[i], histBarWidth, arr[i])
+                x += histBarWidth //2
             }
         }
     }
