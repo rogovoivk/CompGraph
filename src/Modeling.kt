@@ -462,6 +462,9 @@ fun v2(date: String, time: String, samplenumber_: Int, N0: String, samplingrate_
         if (i >= N0.toInt()){
             sgn.arraChannels[0][i] = 100f
         }
+        else {
+            sgn.arraChannels[0][i] = 0f
+        }
     }
     return sgn
 }

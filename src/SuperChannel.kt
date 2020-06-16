@@ -1,9 +1,8 @@
 
 
 
-import javafx.scene.input.MouseDragEvent
 import kotlin.math.abs
-import sun.swing.SwingUtilities2.stringWidth
+
 import java.awt.*
 import java.awt.Font.ITALIC
 import java.awt.Font.BOLD
@@ -229,13 +228,19 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 //        }
 
         for (i in 0..cloneArrDor.size-1){
-            for (j in 0..LineForHistogram-1) {
-                if ((j == 0) and (cloneArrDor[i] < (hightOfHist / LineForHistogram))){CandleHight[0]++}
-                else{
-                    if((cloneArrDor[i] < ((hightOfHist / LineForHistogram) * j)) and (cloneArrDor[i] > ((hightOfHist / LineForHistogram) * (j - 1))))
-                        {CandleHight[j-1]++}
-                    if ((j == LineForHistogram - 1) and (cloneArrDor[i] > (hightOfHist - (hightOfHist / LineForHistogram))))
-                        {CandleHight[j]++}
+            for (j in 0..LineForHistogram - 1) {
+                if (j == 0 && cloneArrDor[i] - 0f < 0.000001) {
+                    CandleHight[0]++
+                }
+//                if ((j == 0) and (cloneArrDor[i] < (hightOfHist / LineForHistogram))){CandleHight[0]++}
+//                else{
+//                    if((cloneArrDor[i] < ((hightOfHist / LineForHistogram) * j)) and (cloneArrDor[i] > ((hightOfHist / LineForHistogram) * (j - 1))))
+//                        {CandleHight[j-1]++}
+//                    if ((j == LineForHistogram - 1) and (cloneArrDor[i] > (hightOfHist - (hightOfHist / LineForHistogram))))
+//                        {CandleHight[j]++}
+//                }
+                if ((cloneArrDor[i] <= ((hightOfHist / LineForHistogram) * (j + 1))) && (cloneArrDor[i] > ((hightOfHist / LineForHistogram)*j))) {
+                    CandleHight[j]++
                 }
             }
         }
