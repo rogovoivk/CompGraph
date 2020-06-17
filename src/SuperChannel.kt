@@ -1,16 +1,13 @@
 
 
 
-import javafx.scene.input.MouseDragEvent
+
 import kotlin.math.abs
-import sun.swing.SwingUtilities2.stringWidth
+
 import java.awt.*
-import java.awt.Font.ITALIC
-import java.awt.Font.BOLD
+
 import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
-import java.awt.event.MouseMotionListener
-import java.util.ArrayList
+
 
 
 class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float, start_: Int, finish_: Int, isCoordinates_: Boolean = false ){
