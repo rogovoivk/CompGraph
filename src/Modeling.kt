@@ -159,7 +159,7 @@ fun InitModel(v: String, oldStartTime: String, oldStartDate: String, oldSampling
 
     if (v == "v4") {
         var a = JTextField("1") //амплитуда
-        var w = JTextField("1") //круговая частота  от 0 до Pi
+        var w = JTextField("0.1") //круговая частота  от 0 до Pi
         var f = JTextField("1") //начальная фаза от 0 до 2 * Pi
         val inputs = arrayOf<JComponent>(
             JLabel("start date :"),
@@ -196,7 +196,7 @@ fun InitModel(v: String, oldStartTime: String, oldStartDate: String, oldSampling
     }
 
     if (v == "v5") {
-        var L = JTextField("50") //период решетки
+        var L = JTextField("1000") //период решетки
         val inputs = arrayOf<JComponent>(
             JLabel("start date :"),
             date,

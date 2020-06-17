@@ -128,32 +128,32 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                         if (arrDot[i].toInt() >= hight) arrDot[i] = hight - 1
                         //if (arrDot[i].toInt() = hight) arrDot[i] = hight - 1
                         g.drawLine(x1, arrDot[i].toInt(), x1, arrDot[candleFilling + i - 1].toInt())
-                        if (x1 > 1){
-                        var min0 = 0
-                        var max0 = 0
-                        if (arrDot[i - candleFilling].toInt() <= arrDot[candleFilling + i - 1 - candleFilling].toInt()) {
-                            min0 = arrDot[i - candleFilling].toInt()
-                            max0 = arrDot[candleFilling + i - 1 - candleFilling].toInt()
-                        } else {
-                            max0 = arrDot[i - candleFilling].toInt()
-                            min0 = arrDot[candleFilling + i - 1 - candleFilling].toInt()
+                        if (i > start+1){
+                            var min0 = 0
+                            var max0 = 0
+                            if (arrDot[i - candleFilling].toInt() <= arrDot[candleFilling + i - 1 - candleFilling].toInt()) {
+                                min0 = arrDot[i - candleFilling].toInt()
+                                max0 = arrDot[candleFilling + i - 1 - candleFilling].toInt()
+                            } else {
+                                max0 = arrDot[i - candleFilling].toInt()
+                                min0 = arrDot[candleFilling + i - 1 - candleFilling].toInt()
+                            }
+                            var min1 = 0
+                            var max1 = 0
+                            if (arrDot[i].toInt() <= arrDot[candleFilling + i - 1].toInt()) {
+                                min1 = arrDot[i].toInt()
+                                max1 = arrDot[candleFilling + i - 1].toInt()
+                            } else {
+                                max1 = arrDot[i].toInt()
+                                min1 = arrDot[candleFilling + i - 1].toInt()
+                            }
+                            if (max1 < min0) {
+                                g.drawLine(x1 - 1, max1, x1, min0)
+                            }
+                            if (min1 > max0) {
+                                g.drawLine(x1 - 1, min1, x1, max0)
+                            }
                         }
-                        var min1 = 0
-                        var max1 = 0
-                        if (arrDot[i].toInt() <= arrDot[candleFilling + i - 1].toInt()) {
-                            min1 = arrDot[i].toInt()
-                            max1 = arrDot[candleFilling + i - 1].toInt()
-                        } else {
-                            max1 = arrDot[i].toInt()
-                            min1 = arrDot[candleFilling + i - 1].toInt()
-                        }
-                        if (max1 < min0) {
-                            g.drawLine(x1 - 1, max1, x1, min0)
-                        }
-                        if (min1 > max0) {
-                            g.drawLine(x1 - 1, min1, x1, max0)
-                        }
-                    }
                     } else {
                         println("график вылез за границу")
                     }
@@ -235,10 +235,18 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     fun GenHist(): IntArray{
         ChangeDot()
         var CandleHight = IntArray(LineForHistogram)
-        var cloneArrDor = arrDot.copyOf()
+
+
+
+//        var cloneArrDor = arrayOfNulls<Float>(finish-start)
+//        for (i in start..finish-1){
+//            cloneArrDor[i] = arrDot[i + start]
+//        }
+
+        var cloneArrDor = arrDot.copyOfRange(start, finish)
 
         var min = cloneArrDor[0]
-
+        try {
         for (i in 0..cloneArrDor.size-1){
             for (j in 0..LineForHistogram - 1) {
                 if (j == 0 && cloneArrDor[i] - 0f < 0.000001) {
@@ -256,6 +264,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 }
             }
         }
+        } catch (e: Exception){}
 
 
         return CandleHight

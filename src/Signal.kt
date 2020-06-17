@@ -12,7 +12,7 @@ class Signal(chan: Int, samplesnumber_: Int, samplingrate_: String, startdate_: 
     var from: String = from_                                               //это источник
     var channelsnames: Array<String?> = channelsnames_
     //var channelsnames = emptyArray<String>()
-    var vision: Array<Array<Int>> = Array(channels, { arrayOf (0, samplesnumber) })
+    var vision: Array<Int> = arrayOf (0, samplesnumber)
 
 
     fun WhatTime(dot: Int, samplerate_: Float): String{

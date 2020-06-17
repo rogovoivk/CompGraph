@@ -240,9 +240,12 @@ class TestMDI : JFrame() {
                 text.preferredSize = Dimension(400, 200)
                 StatContents.add(text)
 
+                statList[i].start = GlobalSignal.vision[0]
+                statList[i].finish = GlobalSignal.vision[1]
                 statList[i].LineForHistogram = MainLineForHistogram
                 statList[i].Histogram.preferredSize = Dimension(400, 106)
                 StatContents.add(statList[i].Histogram)
+                statList[i].Histogram.repaint()
                 statList[i].Histogram.paint(statList[i].Histogram.graphics)
                 println("кол во при создании окна - " + statList.size)
             }
@@ -275,15 +278,17 @@ class TestMDI : JFrame() {
             var clearBut: JButton = JButton("Отчистить")
             StatContents.add(clearBut)
             for (i in 0..statList.size-1){
-                //var text = textArea()
-                statList[i].channelNum = i
                 var text = TextArea (GenStatistics(statList[i], GlobalSignal))
                 text.preferredSize = Dimension(400, 200)
                 StatContents.add(text)
 
-                statList[i].Histogram.preferredSize = Dimension(400, 105)
+                statList[i].start = GlobalSignal.vision[0]
+                statList[i].finish = GlobalSignal.vision[1]
+                statList[i].LineForHistogram = MainLineForHistogram
+                statList[i].Histogram.preferredSize = Dimension(400, 106)
                 StatContents.add(statList[i].Histogram)
                 statList[i].Histogram.paint(statList[i].Histogram.graphics)
+                println("кол во при создании окна - " + statList.size)
             }
             clearBut.addActionListener{
                 for (i in 0..statList.size-1){
@@ -419,15 +424,14 @@ class TestMDI : JFrame() {
                     oscillogramList[i].canv.repaint()
 
                     /** эти строчки нужны для глобального контроля видимости**/
-                    for (j in 0..statList.size -1) {
-                        if(oscillogramList[i].channelNum == statList[j].channelNum) {
-                            GlobalSignal.vision[oscillogramList[i].channelNum][0] = oscillogramList[i].start
-                            GlobalSignal.vision[oscillogramList[i].channelNum][1] = oscillogramList[i].finish
-                        }
-                    }
+
+                            GlobalSignal.vision[0] = oscillogramList[i].start
+                            GlobalSignal.vision[1] = oscillogramList[i].finish
+
                     //oscillogramList[i].canv.paint(oscillogramList[i].canv.graphics)
                 }
                 UpdateStatWind()
+                //CreateStatWind()
             }
             scBar.addAdjustmentListener(winListener)
             if ((oscillogramList[0].start == 0) or (oscillogramList[0].finish == oscillogramList[0].sgn.samplesnumber-1))
@@ -508,14 +512,12 @@ class TestMDI : JFrame() {
                         oscillogramList[i].wight = oscilogramWind.width.toFloat()
 
                         /** эти строчки нужны для глобального контроля видимости**/
-                        for (j in 0..statList.size -1) {
-                            if(oscillogramList[i].channelNum == statList[j].channelNum) {
-                                GlobalSignal.vision[oscillogramList[i].channelNum][0] = first.text.toInt()
-                                GlobalSignal.vision[oscillogramList[i].channelNum][1] = last.text.toInt()
-                            }
-                        }
+                        GlobalSignal.vision[0] = first.text.toInt()
+                        GlobalSignal.vision[1] = last.text.toInt()
+
                     }
                     UpdateStatWind()
+                    //CreateStatWind()
                     println(oscillogramList[0].start)
                     println(oscillogramList[0].finish)
                 } else {

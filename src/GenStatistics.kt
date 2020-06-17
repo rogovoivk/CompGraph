@@ -6,9 +6,9 @@ import kotlin.math.sqrt
 fun GenStatistics(channel : SuperChannel, GlobalSignal: Signal):String {
     var text = String()
     var sortedArr = GlobalSignal.arraChannels[channel.channelNum].copyOf()
-    sortedArr.sort()
+    sortedArr.sort(GlobalSignal.vision[0], GlobalSignal.vision[1])
     try {
-        text += "видимость графика на Осциллограммах от " + GlobalSignal.vision[channel.channelNum][0] + " до " + GlobalSignal.vision[channel.channelNum][1] + "\n"
+        text += "видимость графика на Осциллограммах от " + GlobalSignal.vision[0] + " до " + GlobalSignal.vision[1] + "\n"
 //        sortedArr = Array<Float>(GlobalSignal.vision[channel.channelNum][1] - GlobalSignal.vision[channel.channelNum][0])
 //        for (i in 0..(GlobalSignal.vision[channel.channelNum][1] - GlobalSignal.vision[channel.channelNum][0])){
 //            sortedArr[i] = GlobalSignal.arraChannels[channel.channelNum][i + GlobalSignal.vision[channel.channelNum][0]]
