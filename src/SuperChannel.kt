@@ -128,6 +128,32 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                         if (arrDot[i].toInt() >= hight) arrDot[i] = hight - 1
                         //if (arrDot[i].toInt() = hight) arrDot[i] = hight - 1
                         g.drawLine(x1, arrDot[i].toInt(), x1, arrDot[candleFilling + i - 1].toInt())
+                        if (x1 > 1){
+                        var min0 = 0
+                        var max0 = 0
+                        if (arrDot[i - candleFilling].toInt() <= arrDot[candleFilling + i - 1 - candleFilling].toInt()) {
+                            min0 = arrDot[i - candleFilling].toInt()
+                            max0 = arrDot[candleFilling + i - 1 - candleFilling].toInt()
+                        } else {
+                            max0 = arrDot[i - candleFilling].toInt()
+                            min0 = arrDot[candleFilling + i - 1 - candleFilling].toInt()
+                        }
+                        var min1 = 0
+                        var max1 = 0
+                        if (arrDot[i].toInt() <= arrDot[candleFilling + i - 1].toInt()) {
+                            min1 = arrDot[i].toInt()
+                            max1 = arrDot[candleFilling + i - 1].toInt()
+                        } else {
+                            max1 = arrDot[i].toInt()
+                            min1 = arrDot[candleFilling + i - 1].toInt()
+                        }
+                        if (max1 < min0) {
+                            g.drawLine(x1 - 1, max1, x1, min0)
+                        }
+                        if (min1 > max0) {
+                            g.drawLine(x1 - 1, min1, x1, max0)
+                        }
+                    }
                     } else {
                         println("график вылез за границу")
                     }
