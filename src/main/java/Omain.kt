@@ -241,7 +241,8 @@ class TestMDI : JFrame() {
 //                var text = TextArea (GenStatistics(statList[i], GlobalSignal))
 //                text.preferredSize = Dimension(400, 200)
 //                FourierContents.add(text)
-                sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
+                //sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
+                //sinePlusCosine()
 
             }
             //StatWind.contentPane = StatContents
@@ -1017,6 +1018,7 @@ class TestMDI : JFrame() {
         @JvmStatic
         fun main(args: Array<String>) {
             try {
+                sinePlusCosine()
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel")
             } catch (e: Exception) {
                 e.printStackTrace()
