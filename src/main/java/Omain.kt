@@ -192,14 +192,63 @@ class TestMDI : JFrame() {
 
     init {   // Создадим меню приложения
         lateinit var modelWind: ItemWindow
+        lateinit var FourierWind: ItemWindow
         lateinit var StatWind: ItemWindow
         lateinit var SignalWind: ItemWindow
         lateinit var GlobalSignal : Signal
         var heightOscillogrammGraph = 200
         var oscillogramList: ArrayList<SuperChannel> = ArrayList()
         var statList: ArrayList<SuperChannel> = ArrayList()
+        var FourierList: ArrayList<SuperChannel> = ArrayList()
         lateinit var oscilogramWind: ItemWindow
         var MainLineForHistogram = 5
+
+
+        /**тут описываю окно Фурье  */
+        fun CreateFourierWind(){
+            var FourierContents = JPanel(VerticalLayout())
+            try {
+                //println(oscilogramWind.isClosed)
+                FourierWind.setContentPane(FourierContents)
+                if (FourierWind.isClosed) {
+
+                    FourierWind = ItemWindow("Спектр Фурье", false, true, false, false)
+                    FourierWind.setBounds(25, 25, 700, 450)
+                    FourierWind.addInternalFrameListener(MDIInternalFrameListener())
+                    FourierWind.addComponentListener(MDIResizeListener())
+                    FourierWind.setContentPane(FourierContents)
+                    descPan.add(FourierWind)
+                    FourierWind.isVisible = true
+                }
+            } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
+                println("тут сработало исключение")
+                FourierWind = ItemWindow("Спектр Фурье", false, true, false, false)
+                FourierWind.setBounds(25, 25, 420, 450)
+                FourierWind.addInternalFrameListener(MDIInternalFrameListener())
+                FourierWind.addComponentListener(MDIResizeListener())
+                FourierWind.setContentPane(FourierContents)
+                descPan.add(FourierWind)
+                FourierWind.isVisible = true
+
+            }
+
+            FourierWind.setBounds(250, 250, 420, 350 * statList.size + 30)
+            var clearBut: JButton = JButton("Отчистить")
+            FourierContents.add(clearBut)
+
+            for (i in 0..FourierList.size-1){
+                //statList[i].channelNum = i
+//                var text = TextArea (GenStatistics(statList[i], GlobalSignal))
+//                text.preferredSize = Dimension(400, 200)
+//                FourierContents.add(text)
+                sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
+
+            }
+            //StatWind.contentPane = StatContents
+
+            }
+
+
 
 
         /**тут описываю окно статистик */
@@ -257,8 +306,8 @@ class TestMDI : JFrame() {
                     //statList.dropLast(1)
                     statList = ArrayList()
                     println("размер после удаления - " + statList.size)
+                    StatContents.removeAll()
                 }
-                StatContents.removeAll()
             }
 
         }
@@ -576,6 +625,30 @@ class TestMDI : JFrame() {
                         createOscilogram()
                     }
                     add(oscillogramItem)
+                }
+
+                var FourierItem: JMenuItem
+
+                init {
+                    FourierItem = JMenuItem("Опектр Фурье")
+                    FourierItem.addActionListener {
+                        //var channel_ = SuperChannel(channel.sgn, channel.channelNum, channel.wight, channel.hight, channel.start, channel.finish)
+                        if (FourierList.size > 0){
+                            if (channel.sgn == FourierList[0].sgn) {
+                                FourierList.add(SuperChannel(channel.sgn, channel.channelNum, 600f, 200f, channel.start, channel.finish, true)) // надо потом поменять константные параметры константа - размер канваса
+                            }
+                            else {
+                                FourierList = ArrayList()
+                                FourierList.add(SuperChannel(channel.sgn, channel.channelNum, 600f, 200f, channel.start, channel.finish, true)) // надо потом поменять константные параметры константа - размер канваса
+
+                            }
+                        }
+                        else{
+                            FourierList.add(SuperChannel(channel.sgn, channel.channelNum, 600f, 200f, channel.start, channel.finish, true)) // надо потом поменять константные параметры константа - размер канваса
+                        }
+                        CreateFourierWind()
+                    }
+                    add(FourierItem)
                 }
 
                 var deleteItem: JMenuItem
@@ -944,7 +1017,6 @@ class TestMDI : JFrame() {
         @JvmStatic
         fun main(args: Array<String>) {
             try {
-                sinePlusCosine()
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel")
             } catch (e: Exception) {
                 e.printStackTrace()

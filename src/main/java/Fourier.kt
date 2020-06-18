@@ -3,12 +3,15 @@
 
 import hageldave.ezfftw.fp.*
 
-fun sinePlusCosine() {
+fun sinePlusCosine(samplesLis : Array<Float>, numSamples: Int) {
 
-    val numSamples = 20 //размер
+    //val numSamples = 20 //размер
     val second = 2 * Math.PI // interval of one second
     // create samples
     val samples = FloatArray(numSamples)
+    for (i in 0..numSamples-1){
+        samples[i] = samplesLis[i]
+    }
     for (i in 0 until numSamples) {
         samples[i] = Math.sin(i * second / numSamples).toFloat()
         samples[i] += Math.cos(i * second / numSamples).toFloat()
