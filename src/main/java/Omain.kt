@@ -944,6 +944,7 @@ class TestMDI : JFrame() {
         @JvmStatic
         fun main(args: Array<String>) {
             try {
+                sinePlusCosine()
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel")
             } catch (e: Exception) {
                 e.printStackTrace()
