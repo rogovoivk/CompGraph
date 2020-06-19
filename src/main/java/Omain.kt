@@ -243,9 +243,10 @@ class TestMDI : JFrame() {
 //                FourierContents.add(text)
                 var Complex: ComplexArr = sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
                 FourierList[i].FourierArrDot = Complex.Module()
+                FourierList[i].FourierArrDot
                 FourierList[i].IsFourier = true
                 FourierList[i].isCoordinates = false
-                FourierList[i].canv.preferredSize = Dimension(700, 200)
+                FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
                 FourierContents.add(FourierList[i].canv)
                 //sinePlusCosine()
 
@@ -282,7 +283,6 @@ class TestMDI : JFrame() {
                 StatWind.setContentPane(StatContents)
                 descPan.add(StatWind)
                 StatWind.isVisible = true
-
             }
 
             StatWind.setBounds(250, 250, 420, 350 * statList.size + 30)
