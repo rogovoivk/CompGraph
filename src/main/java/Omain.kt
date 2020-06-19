@@ -241,11 +241,13 @@ class TestMDI : JFrame() {
 //                var text = TextArea (GenStatistics(statList[i], GlobalSignal))
 //                text.preferredSize = Dimension(400, 200)
 //                FourierContents.add(text)
-                var Complex: ComplexArr = sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
-                FourierList[i].FourierArrDot = Complex.Module()
-
+                //var Complex: ComplexArr = sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
+                //FourierList[i].FourierArrDot = Complex.Module()
+                FourierList[i].FourierArrDot = countAmplitudeSpekter(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
+                    FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
                 FourierList[i].IsFourier = true
                 FourierList[i].isCoordinates = false
+                FourierList[i].FourierChangeDot()
                 FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
                 FourierContents.add(FourierList[i].FourieCanv)
                 //sinePlusCosine()
