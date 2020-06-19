@@ -233,8 +233,29 @@ class TestMDI : JFrame() {
             }
 
             FourierWind.setBounds(250, 250, 420, 500)
-            var clearBut: JButton = JButton("Отчистить")
+            var clearBut: JButton = JButton("Очистить")
+            var paramLLabel = JLabel("L")
+            var paramLText : JTextField = JTextField("0")
+            val a : Array<String> = arrayOf("x(0) = 0","x(0) = |x(1)|", " - ")
+            val b : Array<String> = arrayOf("Амплитудный спектр", "СПМ")
+            var curSpectrum = JComboBox(b)
+            var initialParam = JComboBox(a)
+            var update = JButton("Обновить спектры")
+
+            update.addActionListener {
+                var l = paramLText.text
+                var spectrum = curSpectrum.selectedItem
+                var initial = initialParam.selectedItem
+                FourierContents.removeAll()
+                FourierList.clear()
+                CreateFourierWind()
+            }
             FourierContents.add(clearBut)
+            FourierContents.add(paramLLabel)
+            FourierContents.add(paramLText)
+            FourierContents.add(initialParam)
+            FourierContents.add(update)
+            FourierContents.add(curSpectrum)
 
             for (i in 0..FourierList.size-1){
                 //statList[i].channelNum = i
@@ -289,7 +310,7 @@ class TestMDI : JFrame() {
             }
 
             StatWind.setBounds(250, 250, 420, 350 * statList.size + 30)
-            var clearBut: JButton = JButton("Отчистить")
+            var clearBut: JButton = JButton("Очистить")
             StatContents.add(clearBut)
 
             for (i in 0..statList.size-1){
