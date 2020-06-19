@@ -114,11 +114,6 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     var canv = object : Canvas() {
         override
         fun paint(g: Graphics) {
-            if (IsFourier == true){
-                arrDot = FourierArrDot
-                start = 0
-                finish = FourierArrDot.size -1
-            }
             ChangeDot()
             var x1 = 0
             if (isCoordinates == true) x1 = 50
@@ -309,5 +304,181 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     }
 
 
+    fun FourierChangeDot(){
 
+        if((finish - start) < wight){
+            println("ЗАДАННА СУПЕР МАЛЕНЬКАЯ ОБЛАСТЬ")
+            isSmallVision = true
+        }
+        else{isSmallVision = false}
+
+        var zero = 0
+        var length = FourierArrDot.size-1
+        if (LocalMaxMin == true){
+            zero = start
+            length = finish-1
+        }
+
+
+        //arrDot = sgn.arraChannels[channelNum].copyOf()//.copy(sgn.arraChannels[channelNum])// = sgn.arraChannels[channelNum]
+        var max: Float = FourierArrDot[1]
+        var min: Float = FourierArrDot[1]
+        var top: Float = hight
+        var right: Float = 0f
+        for (i in zero..length) {
+            if (max < FourierArrDot[i]) {
+                max = FourierArrDot[i]
+            }
+            if (min > FourierArrDot[i]) {
+                min = FourierArrDot[i]
+            }
+        }
+
+        if (min < 0 ){
+            for (i in zero..length) {
+                FourierArrDot[i] += abs(min)
+            }
+            max += abs(min)
+            min = 0f
+
+        }
+        else {
+            for (i in zero..length) {
+                FourierArrDot[i] -= min
+            }
+            max -= min
+            min = 0f
+        }
+        top = max/top
+        for (i in zero..length){
+            FourierArrDot[i] /= top
+            FourierArrDot[i] = hight - FourierArrDot[i]
+        }
+
+        MaxForHistogram = max
+    }
+
+
+    var FourieCanv = object : Canvas() {
+        override
+        fun paint(g: Graphics) {
+
+            //FourierChangeDot()
+            var x1 = 0
+            if (isCoordinates == true) x1 = 50
+            g.color = Color.BLUE
+            var candleFilling: Int = ((FourierArrDot.size-1) / wight).toInt() //((finish - start) / wight).toInt()
+            //if (isCoordinates == true) candleFilling = ((finish - start) / (wight- 50)).toInt()
+
+
+
+            if (candleFilling == 0) candleFilling = 1
+            if (isSmallVision == false) {
+                for (i in 0..FourierArrDot.size-1 - candleFilling step candleFilling) {
+                    FourierArrDot.sort(i, candleFilling + i - 1)
+                    if (x1 <= wight) {
+                        if (FourierArrDot[i].toInt() >= hight) FourierArrDot[i] = hight - 1
+                        //if (arrDot[i].toInt() = hight) arrDot[i] = hight - 1
+                        g.drawLine(x1, FourierArrDot[i].toInt(), x1, FourierArrDot[candleFilling + i - 1].toInt())
+                        if (i > 1){
+                            var min0 = 0
+                            var max0 = 0
+                            if (FourierArrDot[i - candleFilling].toInt() <= FourierArrDot[candleFilling + i - 1 - candleFilling].toInt()) {
+                                min0 = FourierArrDot[i - candleFilling].toInt()
+                                max0 = FourierArrDot[candleFilling + i - 1 - candleFilling].toInt()
+                            } else {
+                                max0 = FourierArrDot[i - candleFilling].toInt()
+                                min0 = FourierArrDot[candleFilling + i - 1 - candleFilling].toInt()
+                            }
+                            var min1 = 0
+                            var max1 = 0
+                            if (FourierArrDot[i].toInt() <= FourierArrDot[candleFilling + i - 1].toInt()) {
+                                min1 = FourierArrDot[i].toInt()
+                                max1 = FourierArrDot[candleFilling + i - 1].toInt()
+                            } else {
+                                max1 = FourierArrDot[i].toInt()
+                                min1 = FourierArrDot[candleFilling + i - 1].toInt()
+                            }
+                            if (max1 < min0) {
+                                g.drawLine(x1 - 1, max1, x1, min0)
+                            }
+                            if (min1 > max0) {
+                                g.drawLine(x1 - 1, min1, x1, max0)
+                            }
+                        }
+                    } else {
+                        println("график вылез за границу")
+                    }
+                    x1++
+                }
+            }
+            else{
+                var stepX = wight/(FourierArrDot.size-1)
+                for (i in 0..FourierArrDot.size - 1) {
+                    //arrDot.sort(i, candleFilling + i - 1)
+                    if (x <= wight) {
+                        g.drawOval(x1, FourierArrDot[i].toInt(), 1, 4)
+                        if (i > 0){g.drawLine(x1, FourierArrDot[i].toInt(), x1-stepX.toInt(), FourierArrDot[i-1].toInt())}
+                    } else {
+                        println("график вылез за границу")
+                    }
+                    x1 += stepX.toInt()
+                }
+            }
+
+            g.color = Color.BLACK
+            val fm = g.fontMetrics
+            g.drawString(sgn.channelsnames[channelNum], (wight/2).toInt(), 15)
+
+
+            if (isCoordinates == true) {
+                var coordinates = sgn.arraChannels[channelNum].copyOf()
+                var start_ = start
+                var finish_ = finish
+                if (LocalMaxMin == false) {
+                    coordinates.sort(0, coordinates.size-1)
+                    start_ = 0
+                    finish_ = coordinates.size-1
+                }
+                if (LocalMaxMin == true) {
+                    coordinates.sort(start, finish)
+                }
+
+                g.color = Color.BLACK
+                g.drawLine(0, hight.toInt() - 2, wight.toInt(), hight.toInt() - 2)
+                g.drawLine(2, 2, 2, hight.toInt())
+
+                g.drawString(coordinates[start_].toString(), 5, hight_.toInt() - 5)
+                g.drawString(coordinates[start_ + (finish_ - start_) / 4].toString(), 5, (hight_.toInt() / 4) * 3)
+                g.drawString(coordinates[start_ + (finish_ - start_) / 2].toString(), 5, hight_.toInt() / 2)
+                g.drawString(coordinates[start_ + ((finish_ - start_) / 4) * 3].toString(), 5, hight_.toInt() / 4)
+                g.drawString(coordinates[finish_ - 1].toString(), 5, 10)
+
+                g.drawString(sgn.WhatTime((finish - start)/6 * 1 + start, sgn.samplingrate.toFloat()), (wight/6).toInt() * 1 - 15, hight.toInt() + 15)
+                g.drawString(sgn.WhatTime((finish - start)/6 * 2 + start,sgn.samplingrate.toFloat()), (wight/6).toInt() * 2 - 15, hight.toInt() + 15)
+                g.drawString(sgn.WhatTime((finish - start)/6 * 3 + start, sgn.samplingrate.toFloat()), (wight/6).toInt() * 3 - 15, hight.toInt() + 15)
+                g.drawString(sgn.WhatTime((finish - start)/6 * 4 + start, sgn.samplingrate.toFloat()), (wight/6).toInt() * 4 - 15, hight.toInt() + 15)
+                g.drawString(sgn.WhatTime((finish - start)/6 * 5 + start, sgn.samplingrate.toFloat()), (wight/6).toInt() * 5 - 15, hight.toInt() + 15)
+
+                g.color = Color.GRAY
+                //g.drawLine(0, hight.toInt() - 5, wight.toInt(), hight.toInt() - 5)
+                g.drawLine(5, hight.toInt()/2, wight.toInt(), hight.toInt()/2)
+                g.drawLine(5, 2, wight.toInt(), 2)
+
+                g.drawLine((wight/6).toInt() * 1, 2, (wight/6).toInt() * 1, hight.toInt())
+                g.drawLine((wight/6).toInt() * 2, 2, (wight/6).toInt() * 2, hight.toInt())
+                g.drawLine((wight/6).toInt() * 3, 2, (wight/6).toInt() * 3, hight.toInt())
+                g.drawLine((wight/6).toInt() * 4, 2, (wight/6).toInt() * 4, hight.toInt())
+                g.drawLine((wight/6).toInt() * 5, 2, (wight/6).toInt() * 5, hight.toInt())
+            }
+
+            if (isPaintApproach == true){
+                if (MouseEvent.BUTTON1_DOWN_MASK == 1){
+                    println("nagata")
+
+                }
+            }
+
+        }
+    }
 }

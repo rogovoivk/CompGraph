@@ -243,10 +243,11 @@ class TestMDI : JFrame() {
 //                FourierContents.add(text)
                 var Complex: ComplexArr = sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
                 FourierList[i].FourierArrDot = Complex.Module()
+
                 FourierList[i].IsFourier = true
                 FourierList[i].isCoordinates = false
-                FourierList[i].canv.preferredSize = Dimension(700, 200)
-                FourierContents.add(FourierList[i].canv)
+                FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
+                FourierContents.add(FourierList[i].FourieCanv)
                 //sinePlusCosine()
 
             }
