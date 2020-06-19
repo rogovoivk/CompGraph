@@ -49,3 +49,19 @@ fun smoothingSPM(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float, 
     }
     return ans
 }
+
+fun countAmplitudeSpekterInLg(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float): Array<Float> {
+    val res = countAmplitudeSpekter(samplesLis, numSamples, sampleRate)
+    for (i in 0..res.size-1) {
+        res[i] = 20f * Math.log10(res[i].toDouble()).toFloat()
+    }
+    return res
+}
+
+fun countSPMInLg(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float): Array<Float> {
+    val res = countSPM(samplesLis, numSamples, sampleRate)
+    for (i in 0..res.size-1) {
+        res[i] = 10f * Math.log10(res[i].toDouble()).toFloat()
+    }
+    return res
+}
