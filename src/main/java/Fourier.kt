@@ -3,15 +3,12 @@ import hageldave.ezfftw.dp.*
 
 //import hageldave.ezfftw.fp.*
 
-fun sinePlusCosine() {
-
-    val numSamples = 16
+fun sinePlusCosine(samplesLis : Array<Float>, numSamples: Int):ComplexArr {
     val second = 2 * Math.PI // interval of one second
     // create samples
     val samples = DoubleArray(numSamples)
-    for (i in 0 until numSamples) {
-        samples[i] = Math.sin(i * second / numSamples)
-        samples[i] += Math.cos(i * second / numSamples)
+    for (i in 0..numSamples-1){
+        samples[i] = samplesLis[i].toDouble()
     }
     // execute fft
     val realPart = DoubleArray(numSamples)
@@ -21,4 +18,13 @@ fun sinePlusCosine() {
     for (i in 0 until 1 + numSamples / 2) {
         System.out.format("%dHz | % .2f%+.2fi%n", i, realPart[i], imagPart[i])
     }
+
+    var imag = Array<Float>(imagPart.size, {0f})
+    for (i in 0..numSamples-1) {
+        imag[i] = imagPart[i].toFloat()
+        samplesLis[i] = realPart[i].toFloat()
+    }
+    var ans = ComplexArr(samplesLis, imag)
+    return  ans
+
 }

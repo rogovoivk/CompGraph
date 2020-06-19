@@ -38,6 +38,9 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     var MaxForHistogram = 0f
     var hightOfHist = 200//200
 
+    var FourierArrDot : Array<Float> = sgn.arraChannels[channelNum].copyOf()
+    var IsFourier = false
+
 
     fun ChangePainDot(){
         if ( PaintStart > PaintFinish){
@@ -111,6 +114,11 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     var canv = object : Canvas() {
         override
         fun paint(g: Graphics) {
+            if (IsFourier == true){
+                arrDot = FourierArrDot
+                start = 0
+                finish = FourierArrDot.size -1
+            }
             ChangeDot()
             var x1 = 0
             if (isCoordinates == true) x1 = 50

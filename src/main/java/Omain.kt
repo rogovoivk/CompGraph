@@ -212,7 +212,7 @@ class TestMDI : JFrame() {
                 FourierWind.setContentPane(FourierContents)
                 if (FourierWind.isClosed) {
 
-                    FourierWind = ItemWindow("Спектр Фурье", false, true, false, false)
+                    FourierWind = ItemWindow("Спектр Фурье", true, true, false, false)
                     FourierWind.setBounds(25, 25, 700, 450)
                     FourierWind.addInternalFrameListener(MDIInternalFrameListener())
                     FourierWind.addComponentListener(MDIResizeListener())
@@ -222,7 +222,7 @@ class TestMDI : JFrame() {
                 }
             } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
                 println("тут сработало исключение")
-                FourierWind = ItemWindow("Спектр Фурье", false, true, false, false)
+                FourierWind = ItemWindow("Спектр Фурье", true, true, false, false)
                 FourierWind.setBounds(25, 25, 420, 450)
                 FourierWind.addInternalFrameListener(MDIInternalFrameListener())
                 FourierWind.addComponentListener(MDIResizeListener())
@@ -232,7 +232,7 @@ class TestMDI : JFrame() {
 
             }
 
-            FourierWind.setBounds(250, 250, 420, 350 * statList.size + 30)
+            FourierWind.setBounds(250, 250, 420, 500)
             var clearBut: JButton = JButton("Отчистить")
             FourierContents.add(clearBut)
 
@@ -241,7 +241,12 @@ class TestMDI : JFrame() {
 //                var text = TextArea (GenStatistics(statList[i], GlobalSignal))
 //                text.preferredSize = Dimension(400, 200)
 //                FourierContents.add(text)
-                //sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
+                var Complex: ComplexArr = sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
+                FourierList[i].FourierArrDot = Complex.Module()
+                FourierList[i].IsFourier = true
+                FourierList[i].isCoordinates = false
+                FourierList[i].canv.preferredSize = Dimension(700, 200)
+                FourierContents.add(FourierList[i].canv)
                 //sinePlusCosine()
 
             }
@@ -1018,7 +1023,7 @@ class TestMDI : JFrame() {
         @JvmStatic
         fun main(args: Array<String>) {
             try {
-                sinePlusCosine()
+                //sinePlusCosine()
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel")
             } catch (e: Exception) {
                 e.printStackTrace()
