@@ -9,6 +9,7 @@ import javax.swing.event.InternalFrameEvent
 import javax.swing.event.InternalFrameListener
 import java.*
 import java.awt.*
+import java.awt.FlowLayout.*
 import java.awt.event.*
 import java.beans.PropertyVetoException
 import java.io.File
@@ -25,12 +26,9 @@ import javax.swing.JButton
 import java.io.FileFilter
 import java.io.ObjectInputStream
 import java.util.*
-import javax.swing.JOptionPane
-import javax.swing.JLabel
-import javax.swing.JComponent
-import javax.swing.text.*
-import javax.swing.JPasswordField
+import javax.swing.*
 import javax.swing.filechooser.FileNameExtensionFilter
+
 //import javafx.scene.input.MouseEvent
 
 
@@ -205,7 +203,7 @@ class TestMDI : JFrame() {
 
         /// GLOBAL VARIABLES FOR SPEKTERS @Bar ///
         val isAmplitude = true
-        val smoothCoeff = 5
+        val smoothCoeff = 0
         val isLinearShowing = true
         ///
 
@@ -246,22 +244,71 @@ class TestMDI : JFrame() {
             val b : Array<String> = arrayOf("Амплитудный спектр", "СПМ")
             var curSpectrum = JComboBox(b)
             var initialParam = JComboBox(a)
+            val c : Array<String> = arrayOf("Линейный", "Логарифмический")
+            var lgOrLin = JComboBox(c)
             var update = JButton("Обновить спектры")
 
             update.addActionListener {
                 var l = paramLText.text
                 var spectrum = curSpectrum.selectedItem
                 var initial = initialParam.selectedItem
+                var lgOrLinOption = lgOrLin.selectedItem
                 FourierContents.removeAll()
-                FourierList.clear()
+                for (i in 0..FourierList.size-1) {
+                    when (spectrum) {
+                        "СМП" -> {
+                            if (l.toInt() > 0) {
+                                FourierList[i].FourierArrDot = countSmoothingSPM(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
+                                    FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat(), l.toInt())
+
+                            } else {
+                                FourierList[i].FourierArrDot = countSPM(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
+                                    FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                            }
+                        }
+                        "Амплитудный спектр" -> {
+                            if (l.toInt() > 0) {
+                                FourierList[i].FourierArrDot = countSmoothingAmplitude(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
+                                    FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat(), l.toInt())
+                            } else {
+                                FourierList[i].FourierArrDot = countAmplitudeSpekter(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
+                                    FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                            }
+                        }
+                    }
+                    if (spectrum == "СМП" && lgOrLinOption ==  "Логарифмический") {
+                        FourierList[i].FourierArrDot = countSPMInLg(FourierList[i].FourierArrDot,
+                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                    }
+                    if (spectrum == "Амплитудный спектр" && lgOrLinOption == "Логарифмический")  {
+                        FourierList[i].FourierArrDot = countAmplitudeSpekterInLg(FourierList[i].FourierArrDot,
+                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                    }
+
+
+                    FourierList[i].IsFourier = true
+                    FourierList[i].isCoordinates = false
+                    FourierList[i].FourierChangeDot()
+                    FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
+                    FourierContents.add(FourierList[i].FourieCanv)
+                }
+
+
                 CreateFourierWind()
             }
+            /*
+         * Определение последовательного расположения
+         * с выравниванием компонентов по центру
+         */ FourierContents.layout = FlowLayout(FlowLayout.LEFT)
+            FourierContents.add(lgOrLin)
             FourierContents.add(clearBut)
+            FourierContents.add(curSpectrum)
+             FourierContents.add(initialParam)
+            FourierContents.add(update)
             FourierContents.add(paramLLabel)
             FourierContents.add(paramLText)
-            FourierContents.add(initialParam)
-            FourierContents.add(update)
-            FourierContents.add(curSpectrum)
+
+
 
             for (i in 0..FourierList.size-1){
                 //statList[i].channelNum = i
