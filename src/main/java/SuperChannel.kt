@@ -72,7 +72,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
         }
 
 
-        arrDot = sgn.arraChannels[channelNum].copyOf()//.copy(sgn.arraChannels[channelNum])// = sgn.arraChannels[channelNum]
+      //  arrDot = sgn.arraChannels[channelNum].copyOf()//.copy(sgn.arraChannels[channelNum])// = sgn.arraChannels[channelNum]
         var max: Float = arrDot[1]
         var min: Float = arrDot[1]
         var top: Float = hight
@@ -119,7 +119,11 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 start = 0
                 finish = FourierArrDot.size -1
             }
+
             ChangeDot()
+
+
+
             var x1 = 0
             if (isCoordinates == true) x1 = 50
             g.color = Color.BLUE
@@ -132,6 +136,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
             if (isSmallVision == false) {
                 for (i in start..finish - candleFilling step candleFilling) {
                     arrDot.sort(i, candleFilling + i - 1)
+
                     if (x1 <= wight) {
                         if (arrDot[i].toInt() >= hight) arrDot[i] = hight - 1
                         //if (arrDot[i].toInt() = hight) arrDot[i] = hight - 1
@@ -253,11 +258,13 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 
         var cloneArrDor = arrDot.copyOfRange(start, finish)
 
+
+        val tmp = cloneArrDor.sortedArray()
         var min = cloneArrDor[0]
         try {
         for (i in 0..cloneArrDor.size-1){
             for (j in 0..LineForHistogram - 1) {
-                if (j == 0 && cloneArrDor[i] - 0f < 0.000001) {
+                if (j == 0 && cloneArrDor[i] - 0f < 0.0000000001) {
                     CandleHight[0]++
                 }
 //                if ((j == 0) and (cloneArrDor[i] < (hightOfHist / LineForHistogram))){CandleHight[0]++}

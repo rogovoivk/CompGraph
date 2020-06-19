@@ -234,7 +234,18 @@ class TestMDI : JFrame() {
 
             FourierWind.setBounds(250, 250, 420, 500)
             var clearBut: JButton = JButton("Отчистить")
+            var label = JLabel("L")
+            var paramLText = JTextField("0")
+            val a = arrayOf("d", "a")
+            var q  = JComboBox(a)
+
+         //   FourierContents.layout.Box
+
             FourierContents.add(clearBut)
+            FourierContents.add(label)
+            FourierContents.add(paramLText)
+            FourierContents.add(q)
+
 
             for (i in 0..FourierList.size-1){
                 //statList[i].channelNum = i
@@ -242,7 +253,7 @@ class TestMDI : JFrame() {
 //                text.preferredSize = Dimension(400, 200)
 //                FourierContents.add(text)
                 var Complex: ComplexArr = sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
-                FourierList[i].FourierArrDot = Complex.Module()
+                FourierList[i].FourierArrDot = Complex.Module(1 / FourierList[i].sgn.samplingrate.toFloat())
                 FourierList[i].IsFourier = true
                 FourierList[i].isCoordinates = false
                 FourierList[i].canv.preferredSize = Dimension(700, 200)
