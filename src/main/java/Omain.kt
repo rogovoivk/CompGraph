@@ -185,9 +185,11 @@ class TestMDI : JFrame() {
         lateinit var oscilogramWind: ItemWindow
         var MainLineForHistogram = 5
 
-        fun updateFourierWind() {
-
-        }
+        /// GLOBAL VARIABLES FOR SPEKTERS @Bar ///
+        var isAmplitude = true
+        var smoothCoeff = 5
+        var isLinearShowing = true
+        ///
 
         /**тут описываю окно Фурье  */
         fun CreateFourierWind(){
@@ -217,7 +219,7 @@ class TestMDI : JFrame() {
 
             }
 
-            FourierWind.setBounds(250, 250, 420, 500)
+            FourierWind.setBounds(250, 250, 700, 500)
             var clearBut: JButton = JButton("Очистить")
             var paramLLabel = JLabel("L")
             var paramLText : JTextField = JTextField("0")
@@ -229,67 +231,48 @@ class TestMDI : JFrame() {
             var lgOrLin = JComboBox(c)
             var update = JButton("Обновить спектры")
 
-            update.addActionListener {
-                var l = paramLText.text
-                var spectrum = curSpectrum.selectedItem
-                var initial = initialParam.selectedItem
-                var lgOrLinOption = lgOrLin.selectedItem
-                FourierContents.removeAll()
-                for (i in 0..FourierList.size-1) {
-                    when (spectrum) {
-                        "СМП" -> {
-                            if (l.toInt() > 0) {
-                                FourierList[i].FourierArrDot = smoothingSPM(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
-                                    FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat(), l.toInt())
+            /*
+      * Определение последовательного расположения
+      * с выравниванием компонентов по центру
+      */ FourierContents.layout = FlowLayout(FlowLayout.LEFT)
+            if (isAmplitude == false) curSpectrum.selectedItem = "СПМ"
+            if(isAmplitude == true) curSpectrum.selectedItem = "Амплитудный спектр"
+            paramLText.text = smoothCoeff.toString()
+            if (isLinearShowing == true) lgOrLin.selectedItem = "Линейный"
+            if (isLinearShowing == false) lgOrLin.selectedItem = "Логарифмический"
 
-                            } else {
-                                FourierList[i].FourierArrDot = countSPM(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
-                                    FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
-                            }
-                        }
-                        "Амплитудный спектр" -> {
-                            if (l.toInt() > 0) {
-                                FourierList[i].FourierArrDot = smoothingAmplitude(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
-                                    FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat(), l.toInt())
-                            } else {
-                                FourierList[i].FourierArrDot = countAmplitudeSpekter(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
-                                    FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
-                            }
-                        }
-                    }
-                    if (spectrum == "СМП" && lgOrLinOption ==  "Логарифмический") {
-                        FourierList[i].FourierArrDot = countSPMInLg(FourierList[i].FourierArrDot,
-                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
-                    }
-                    if (spectrum == "Амплитудный спектр" && lgOrLinOption == "Логарифмический")  {
-                        FourierList[i].FourierArrDot = countAmplitudeSpekterInLg(FourierList[i].FourierArrDot,
-                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
-                    }
-
-
-                    FourierList[i].IsFourier = true
-                    FourierList[i].isCoordinates = false
-                    FourierList[i].FourierChangeDot()
-                    FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
-                    FourierContents.add(FourierList[i].FourieCanv)
+                update.addActionListener {
+                //if (curSpectrum.toolTipText == "СПМ") {println("СПМ")}
+                if (curSpectrum.selectedItem == "СПМ"){
+                    print("выбран СПМ - ")
+                    isAmplitude = false
+                }
+                if (curSpectrum.selectedItem == "Амплитудный спектр"){
+                    print("выбран Амплитудный спектр - ")
+                    isAmplitude = true
                 }
 
+                smoothCoeff = paramLText.text.toInt()
+                print(smoothCoeff)
 
+                if (lgOrLin.selectedItem == "Линейный"){
+                    println(" - выбран Линейный")
+                    isLinearShowing = true
+                }
+
+                if (lgOrLin.selectedItem == "Логарифмический"){
+                    println(" - выбран Логарифмический")
+                    isLinearShowing = false
+                }
                 CreateFourierWind()
             }
-            /*
-         * Определение последовательного расположения
-         * с выравниванием компонентов по центру
-         */ FourierContents.layout = FlowLayout(FlowLayout.LEFT)
-            FourierContents.add(lgOrLin)
             FourierContents.add(clearBut)
-            FourierContents.add(curSpectrum)
-             FourierContents.add(initialParam)
-            FourierContents.add(update)
             FourierContents.add(paramLLabel)
             FourierContents.add(paramLText)
-
-
+            FourierContents.add(initialParam)
+            FourierContents.add(curSpectrum)
+            FourierContents.add(lgOrLin)
+            FourierContents.add(update)
 
             for (i in 0..FourierList.size-1){
                 //statList[i].channelNum = i
@@ -298,19 +281,54 @@ class TestMDI : JFrame() {
 //                FourierContents.add(text)
                 //var Complex: ComplexArr = sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
                 //FourierList[i].FourierArrDot = Complex.Module()
-                FourierList[i].FourierArrDot = countAmplitudeSpekter(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
-                    FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
-                FourierList[i].IsFourier = true
-                FourierList[i].isCoordinates = false
-                FourierList[i].FourierChangeDot()
+                var transferedArr : Array<Float>
+                var copyOrigArr = FourierList[i].sgn.arraChannels[FourierList[i].channelNum].copyOf()
+                if (isAmplitude) {
+                    if (smoothCoeff == 0) {
+                        transferedArr = countAmplitudeSpekter(copyOrigArr,
+                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                    }
+                    else
+                        transferedArr = countSmoothingAmplitude(copyOrigArr,
+                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat(), smoothCoeff)
+                }
+                else {
+                    if (smoothCoeff == 0) {
+                        transferedArr = countSPM(copyOrigArr,
+                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                    }
+                    else
+                        transferedArr = countSmoothingSPM(copyOrigArr,
+                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat(), smoothCoeff)
+                }
+                if (!isLinearShowing) {
+                    if (isAmplitude)
+                        countAmplitudeSpekterInLg(transferedArr)
+                    else
+                        countSPMInLg(transferedArr)
+                }
+
+//                FourierList[i].FourierArrDot = //countAmplitudeSpekter(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
+//                        //FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+//                    transferedArr
+//                FourierList[i].IsFourier = true
+//                FourierList[i].isCoordinates = true
+//                FourierList[i].FourierChangeDot()
+                FourierList[i].GenFourierCanv(700, 200, true, 0, transferedArr.size-1, transferedArr)
                 FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
                 FourierContents.add(FourierList[i].FourieCanv)
                 //sinePlusCosine()
 
             }
-            //StatWind.contentPane = StatContents
 
-            }
+        }
+
+        fun UpdateFourierWind(){
+
+        }
+
+
+
 
 
 
@@ -694,7 +712,7 @@ class TestMDI : JFrame() {
                 var FourierItem: JMenuItem
 
                 init {
-                    FourierItem = JMenuItem("Опектр Фурье")
+                    FourierItem = JMenuItem("Cпектр Фурье")
                     FourierItem.addActionListener {
                         //var channel_ = SuperChannel(channel.sgn, channel.channelNum, channel.wight, channel.hight, channel.start, channel.finish)
                         if (FourierList.size > 0){
