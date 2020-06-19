@@ -219,7 +219,7 @@ class TestMDI : JFrame() {
 
             }
 
-            FourierWind.setBounds(250, 250, 700, 500)
+            FourierWind.setBounds(FourierWind.x, FourierWind.y, 700, FourierList.size*210 + 50)
             var clearBut: JButton = JButton("Очистить")
             var paramLLabel = JLabel("L")
             var paramLText : JTextField = JTextField("0")
@@ -266,6 +266,11 @@ class TestMDI : JFrame() {
                 }
                 CreateFourierWind()
             }
+            clearBut.addActionListener{
+                FourierList.clear()
+                FourierContents.removeAll()
+            }
+
             FourierContents.add(clearBut)
             FourierContents.add(paramLLabel)
             FourierContents.add(paramLText)
@@ -282,24 +287,25 @@ class TestMDI : JFrame() {
                 //var Complex: ComplexArr = sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
                 //FourierList[i].FourierArrDot = Complex.Module()
                 var transferedArr : Array<Float>
+                var transferSamlesnumber = FourierList[i].sgn.arraChannels[FourierList[i].channelNum].size
                 var copyOrigArr = FourierList[i].sgn.arraChannels[FourierList[i].channelNum].copyOf()
                 if (isAmplitude) {
                     if (smoothCoeff == 0) {
                         transferedArr = countAmplitudeSpekter(copyOrigArr,
-                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                            transferSamlesnumber, FourierList[i].sgn.samplingrate.toFloat())
                     }
                     else
                         transferedArr = countSmoothingAmplitude(copyOrigArr,
-                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat(), smoothCoeff)
+                            transferSamlesnumber, FourierList[i].sgn.samplingrate.toFloat(), smoothCoeff)
                 }
                 else {
                     if (smoothCoeff == 0) {
                         transferedArr = countSPM(copyOrigArr,
-                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                            transferSamlesnumber, FourierList[i].sgn.samplingrate.toFloat())
                     }
                     else
                         transferedArr = countSmoothingSPM(copyOrigArr,
-                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat(), smoothCoeff)
+                            transferSamlesnumber, FourierList[i].sgn.samplingrate.toFloat(), smoothCoeff)
                 }
                 if (!isLinearShowing) {
                     if (isAmplitude)
@@ -314,7 +320,8 @@ class TestMDI : JFrame() {
 //                FourierList[i].IsFourier = true
 //                FourierList[i].isCoordinates = true
 //                FourierList[i].FourierChangeDot()
-                FourierList[i].GenFourierCanv(700, 200, true, 0, transferedArr.size-1, transferedArr)
+                var copyTransferArr = transferedArr.copyOfRange(0,transferSamlesnumber/2)
+                FourierList[i].GenFourierCanv(700, 200, true, 0, transferSamlesnumber/2, transferedArr)
                 FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
                 FourierContents.add(FourierList[i].FourieCanv)
                 //sinePlusCosine()
