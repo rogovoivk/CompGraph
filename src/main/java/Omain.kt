@@ -247,7 +247,7 @@ class TestMDI : JFrame() {
                 FourierList[i].IsFourier = true
                 FourierList[i].isCoordinates = false
                 FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
-                FourierContents.add(FourierList[i].canv)
+                FourierContents.add(FourierList[i].FourieCanv)
                 //sinePlusCosine()
 
             }
