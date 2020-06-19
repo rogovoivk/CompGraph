@@ -203,6 +203,12 @@ class TestMDI : JFrame() {
         lateinit var oscilogramWind: ItemWindow
         var MainLineForHistogram = 5
 
+        /// GLOBAL VARIABLES FOR SPEKTERS @Bar ///
+        val isAmplitude = true
+        val smoothCoeff = 5
+        val isLinearShowing = true
+        ///
+
 
         /**тут описываю окно Фурье  */
         fun CreateFourierWind(){
@@ -264,10 +270,37 @@ class TestMDI : JFrame() {
 //                FourierContents.add(text)
                 //var Complex: ComplexArr = sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
                 //FourierList[i].FourierArrDot = Complex.Module()
-                FourierList[i].FourierArrDot = countAmplitudeSpekter(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
-                    FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                var transferedArr : Array<Float>
+                if (isAmplitude) {
+                    if (smoothCoeff == 0) {
+                        transferedArr = countAmplitudeSpekter(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
+                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                    }
+                    else
+                        transferedArr = countSmoothingAmplitude(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
+                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat(), smoothCoeff)
+                }
+                else {
+                    if (smoothCoeff == 0) {
+                        transferedArr = countSPM(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
+                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                    }
+                    else
+                        transferedArr = countSmoothingSPM(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
+                            FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat(), smoothCoeff)
+                }
+                if (!isLinearShowing) {
+                    if (isAmplitude)
+                        countAmplitudeSpekterInLg(transferedArr)
+                    else
+                        countSPMInLg(transferedArr)
+                }
+
+                FourierList[i].FourierArrDot = //countAmplitudeSpekter(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
+                    //FourierList[i].sgn.samplesnumber, FourierList[i].sgn.samplingrate.toFloat())
+                    transferedArr
                 FourierList[i].IsFourier = true
-                FourierList[i].isCoordinates = false
+                FourierList[i].isCoordinates = true
                 FourierList[i].FourierChangeDot()
                 FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
                 FourierContents.add(FourierList[i].FourieCanv)
