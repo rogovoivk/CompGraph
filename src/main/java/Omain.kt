@@ -288,8 +288,8 @@ class TestMDI : JFrame() {
                 //var Complex: ComplexArr = sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
                 //FourierList[i].FourierArrDot = Complex.Module()
                 var transferedArr : Array<Float>
-                var transferSamlesnumber = FourierList[i].sgn.arraChannels[FourierList[i].channelNum].size
-                var copyOrigArr = FourierList[i].sgn.arraChannels[FourierList[i].channelNum].copyOf()
+                var transferSamlesnumber = GlobalSignal.vision[1] - GlobalSignal.vision[0]
+                var copyOrigArr = FourierList[i].sgn.arraChannels[FourierList[i].channelNum].copyOfRange(GlobalSignal.vision[0], GlobalSignal.vision[1])
                 if (isAmplitude) {
                     if (smoothCoeff == 0) {
                         transferedArr = countAmplitudeSpekter(copyOrigArr,
