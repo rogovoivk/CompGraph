@@ -1,3 +1,4 @@
+import kotlin.math.abs
 import kotlin.math.sqrt
 
 fun countAmplitudeSpekter(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float) :Array<Float> {
@@ -25,8 +26,10 @@ fun countSmoothingAmplitude(samplesLis : Array<Float>, numSamples: Int, sampleRa
     val ansCopy = ans.copyOf()
     for (i in 0..ans.size-1) {
         for (j in -smoothCoeff..smoothCoeff) {
-            if (i + j >= 0 && i + j < ans.size)
-                ans[i] += ansCopy[i + j]
+
+            println((i + j)%ansCopy.size)
+            ans[i] += ansCopy[(i + j + ansCopy.size)%ansCopy.size]
+
         }
         ans[i] = ans[i] / (2 * smoothCoeff + 1)
     }
