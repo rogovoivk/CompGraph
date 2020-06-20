@@ -47,7 +47,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     private var FIsCoordinates = false
     private var FStart: Int = 0
     private var FFinish: Int = 0
-    private var FCordinates: Array<Float> = sgn.arraChannels[channelNum].copyOf()
+    private var FCoordinates: Array<Float> = sgn.arraChannels[channelNum].copyOf()
     private var FisSmallVision = false
     /**тут заканчиваются всякие переменные для спектра Фурье **/
 
@@ -365,7 +365,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 
     fun GenFourierCanv(weight_: Int, hight_: Int, FourierCordinates_: Boolean, start_: Int, finish_: Int, arr: Array<Float>){
         FourierArrDot = arr
-        FCordinates = arr
+        FCoordinates = arr
         if (FourierCordinates_ == true)
             FHight = hight_ - 10
         else
@@ -450,7 +450,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
             g.drawString(sgn.channelsnames[channelNum], (FWeight/2).toInt(), 15)
 
             if (FIsCoordinates == true) {
-                var FCoordinates = sgn.arraChannels[channelNum].copyOf()
+                //FCoordinates = sgn.arraChannels[channelNum].copyOf()
                 var start_ = FStart
                 var finish_ = FFinish
                 if (LocalMaxMin == false) {
