@@ -189,6 +189,7 @@ class TestMDI : JFrame() {
         var isAmplitude = true
         var smoothCoeff = 5
         var isLinearShowing = true
+        var NulElem = 1
         ///
 
         /**тут описываю окно Фурье  */
@@ -241,6 +242,9 @@ class TestMDI : JFrame() {
             paramLText.text = smoothCoeff.toString()
             if (isLinearShowing == true) lgOrLin.selectedItem = "Линейный"
             if (isLinearShowing == false) lgOrLin.selectedItem = "Логарифмический"
+            if (NulElem == 0) initialParam.selectedItem = "x(0) = 0"
+            if (NulElem == 1) initialParam.selectedItem = "x(0) = |x(1)|"
+            if (NulElem == 2) initialParam.selectedItem = " - "
 
                 update.addActionListener {
                 //if (curSpectrum.toolTipText == "СПМ") {println("СПМ")}
@@ -257,15 +261,29 @@ class TestMDI : JFrame() {
                 print(smoothCoeff)
 
                 if (lgOrLin.selectedItem == "Линейный"){
-                    println(" - выбран Линейный")
+                    print(" - выбран Линейный")
                     isLinearShowing = true
                 }
 
                 if (lgOrLin.selectedItem == "Логарифмический"){
-                    println(" - выбран Логарифмический")
+                    print(" - выбран Логарифмический")
                     isLinearShowing = false
                 }
-                CreateFourierWind()
+
+                    if (initialParam.selectedItem == "x(0) = 0"){
+                        println(" x(0) = 0")
+                        NulElem = 0
+                    }
+
+                    if (initialParam.selectedItem == "x(0) = |x(1)|"){
+                        println(" x(0) = |x(1)|")
+                        NulElem = 1
+                    }
+                    if (initialParam.selectedItem == " - "){
+                        println("  - ")
+                        NulElem = 2
+                    }
+                    CreateFourierWind()
             }
             clearBut.addActionListener{
                 FourierList.clear()
@@ -321,7 +339,9 @@ class TestMDI : JFrame() {
 //                FourierList[i].IsFourier = true
 //                FourierList[i].isCoordinates = true
 //                FourierList[i].FourierChangeDot()
-                var copyTransferArr = transferedArr.copyOfRange(0,transferSamlesnumber/2)
+
+                if (NulElem == 0) transferedArr[0] = 0f
+                if (NulElem == 1) transferedArr[0] = transferedArr[1]
                 FourierList[i].GenFourierCanv(700, 200, true, 0, transferSamlesnumber/2, transferedArr)
                 FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
                 FourierContents.add(FourierList[i].FourieCanv)
