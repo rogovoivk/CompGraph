@@ -34,12 +34,23 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     var PaintStart = 0
     var PaintFinish = 0
 
+
     var LineForHistogram = 5
     var MaxForHistogram = 0f
     var hightOfHist = 200//200
 
+    /** всякие переменные для спектра Фурье **/
     var FourierArrDot : Array<Float> = sgn.arraChannels[channelNum].copyOf()
-    var IsFourier = false
+    //var IsFourier = false
+    private var FWeight: Int = 0
+    private var FHight: Int = 0
+    private var FIsCoordinates = false
+    private var FStart: Int = 0
+    private var FFinish: Int = 0
+    private var FCoordinates: Array<Float> = sgn.arraChannels[channelNum].copyOf()
+    private var FisSmallVision = false
+    /**тут заканчиваются всякие переменные для спектра Фурье **/
+
 
 
     fun ChangePainDot(){
@@ -169,7 +180,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                     //arrDot.sort(i, candleFilling + i - 1)
                     if (x <= wight) {
                         g.drawOval(x1, arrDot[i].toInt(), 1, 4)
-                        if (i > 0){g.drawLine(x1, arrDot[i].toInt(), x1-stepX.toInt(), arrDot[i-1].toInt())}
+                        if (i > start){g.drawLine(x1, arrDot[i].toInt(), x1-stepX.toInt(), arrDot[i-1].toInt())}
                     } else {
                         println("график вылез за границу")
                     }
@@ -235,7 +246,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 
 
 
-    fun GenHist(): IntArray{
+    public fun GenHist(): IntArray{
         ChangeDot()
         var CandleHight = IntArray(LineForHistogram)
 
@@ -250,11 +261,11 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 
         var min = cloneArrDor[0]
         try {
-        for (i in 0..cloneArrDor.size-1){
-            for (j in 0..LineForHistogram - 1) {
-                if (j == 0 && cloneArrDor[i] - 0f < 0.000001) {
-                    CandleHight[0]++
-                }
+            for (i in 0..cloneArrDor.size-1){
+                for (j in 0..LineForHistogram - 1) {
+                    if (j == 0 && cloneArrDor[i] - 0f < 0.000001) {
+                        CandleHight[0]++
+                    }
 //                if ((j == 0) and (cloneArrDor[i] < (hightOfHist / LineForHistogram))){CandleHight[0]++}
 //                else{
 //                    if((cloneArrDor[i] < ((hightOfHist / LineForHistogram) * j)) and (cloneArrDor[i] > ((hightOfHist / LineForHistogram) * (j - 1))))
@@ -262,11 +273,11 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 //                    if ((j == LineForHistogram - 1) and (cloneArrDor[i] > (hightOfHist - (hightOfHist / LineForHistogram))))
 //                        {CandleHight[j]++}
 //                }
-                if ((cloneArrDor[i] <= ((hightOfHist / LineForHistogram) * (j + 1))) && (cloneArrDor[i] > ((hightOfHist / LineForHistogram)*j))) {
-                    CandleHight[j]++
+                    if ((cloneArrDor[i] <= ((hightOfHist / LineForHistogram) * (j + 1))) && (cloneArrDor[i] > ((hightOfHist / LineForHistogram)*j))) {
+                        CandleHight[j]++
+                    }
                 }
             }
-        }
         } catch (e: Exception){}
 
 
@@ -306,24 +317,20 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 
     fun FourierChangeDot(){
 
-        if((finish - start) < wight){
+        if((FFinish - FStart) < FWeight){
             println("ЗАДАННА СУПЕР МАЛЕНЬКАЯ ОБЛАСТЬ")
-            isSmallVision = true
+            FisSmallVision = true
         }
-        else{isSmallVision = false}
+        else{FisSmallVision = false}
 
         var zero = 0
         var length = FourierArrDot.size-1
-        if (LocalMaxMin == true){
-            zero = start
-            length = finish-1
-        }
 
 
         //arrDot = sgn.arraChannels[channelNum].copyOf()//.copy(sgn.arraChannels[channelNum])// = sgn.arraChannels[channelNum]
         var max: Float = FourierArrDot[1]
         var min: Float = FourierArrDot[1]
-        var top: Float = hight
+        var top: Float = FHight.toFloat()
         var right: Float = 0f
         for (i in zero..length) {
             if (max < FourierArrDot[i]) {
@@ -352,10 +359,24 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
         top = max/top
         for (i in zero..length){
             FourierArrDot[i] /= top
-            FourierArrDot[i] = hight - FourierArrDot[i]
+            FourierArrDot[i] = FHight - FourierArrDot[i]
         }
+    }
 
-        MaxForHistogram = max
+    fun GenFourierCanv(weight_: Int, hight_: Int, FourierCordinates_: Boolean, start_: Int, finish_: Int, arr: Array<Float>){
+        FourierArrDot = arr
+        FCoordinates = arr
+        if (FourierCordinates_ == true)
+            FHight = hight_ - 10
+        else
+            FHight = hight_
+        FWeight = weight_
+        FIsCoordinates = FourierCordinates_
+
+        //start и finish это индексы отсчетов
+        FStart = start_
+        FFinish = finish_
+        FourierChangeDot()
     }
 
 
@@ -367,20 +388,18 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
             var x1 = 0
             if (isCoordinates == true) x1 = 50
             g.color = Color.BLUE
-            var candleFilling: Int = ((FourierArrDot.size-1) / wight).toInt() //((finish - start) / wight).toInt()
+            var candleFilling: Int = ((FFinish - FStart) / FWeight).toInt() //((finish - start) / wight).toInt()
             //if (isCoordinates == true) candleFilling = ((finish - start) / (wight- 50)).toInt()
 
-
-
             if (candleFilling == 0) candleFilling = 1
-            if (isSmallVision == false) {
-                for (i in 0..FourierArrDot.size-1 - candleFilling step candleFilling) {
+            if (FisSmallVision == false) {
+                for (i in FStart..FFinish - candleFilling step candleFilling) {
                     FourierArrDot.sort(i, candleFilling + i - 1)
-                    if (x1 <= wight) {
-                        if (FourierArrDot[i].toInt() >= hight) FourierArrDot[i] = hight - 1
+                    if (x1 <= FWeight) {
+                        if (FourierArrDot[i].toInt() >= hight) FourierArrDot[i] = FHight.toFloat() - 1
                         //if (arrDot[i].toInt() = hight) arrDot[i] = hight - 1
                         g.drawLine(x1, FourierArrDot[i].toInt(), x1, FourierArrDot[candleFilling + i - 1].toInt())
-                        if (i > 1){
+                        if (i > FStart+1){
                             var min0 = 0
                             var max0 = 0
                             if (FourierArrDot[i - candleFilling].toInt() <= FourierArrDot[candleFilling + i - 1 - candleFilling].toInt()) {
@@ -413,12 +432,12 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 }
             }
             else{
-                var stepX = wight/(FourierArrDot.size-1)
-                for (i in 0..FourierArrDot.size - 1) {
+                var stepX = FWeight/(FFinish - FStart)
+                for (i in FStart..FFinish - 1) {
                     //arrDot.sort(i, candleFilling + i - 1)
-                    if (x <= wight) {
+                    if (x1 <= FWeight) {
                         g.drawOval(x1, FourierArrDot[i].toInt(), 1, 4)
-                        if (i > 0){g.drawLine(x1, FourierArrDot[i].toInt(), x1-stepX.toInt(), FourierArrDot[i-1].toInt())}
+                        if (i > FStart){g.drawLine(x1, FourierArrDot[i].toInt(), x1-stepX.toInt(), FourierArrDot[i-1].toInt())}
                     } else {
                         println("график вылез за границу")
                     }
@@ -428,48 +447,47 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 
             g.color = Color.BLACK
             val fm = g.fontMetrics
-            g.drawString(sgn.channelsnames[channelNum], (wight/2).toInt(), 15)
+            g.drawString(sgn.channelsnames[channelNum], (FWeight/2).toInt(), 15)
 
-
-            if (isCoordinates == true) {
-                var coordinates = sgn.arraChannels[channelNum].copyOf()
-                var start_ = start
-                var finish_ = finish
+            if (FIsCoordinates == true) {
+                //FCoordinates = sgn.arraChannels[channelNum].copyOf()
+                var start_ = FStart
+                var finish_ = FFinish
                 if (LocalMaxMin == false) {
-                    coordinates.sort(0, coordinates.size-1)
+                    FCoordinates.sort(0, FCoordinates.size-1)
                     start_ = 0
-                    finish_ = coordinates.size-1
+                    finish_ = FCoordinates.size-1
                 }
                 if (LocalMaxMin == true) {
-                    coordinates.sort(start, finish)
+                    FCoordinates.sort(FStart, FFinish)
                 }
 
                 g.color = Color.BLACK
-                g.drawLine(0, hight.toInt() - 2, wight.toInt(), hight.toInt() - 2)
-                g.drawLine(2, 2, 2, hight.toInt())
+                g.drawLine(0, FHight.toInt() - 2, FWeight.toInt(), FHight.toInt() - 2)
+                g.drawLine(2, 2, 2, FHight.toInt())
 
-                g.drawString(coordinates[start_].toString(), 5, hight_.toInt() - 5)
-                g.drawString(coordinates[start_ + (finish_ - start_) / 4].toString(), 5, (hight_.toInt() / 4) * 3)
-                g.drawString(coordinates[start_ + (finish_ - start_) / 2].toString(), 5, hight_.toInt() / 2)
-                g.drawString(coordinates[start_ + ((finish_ - start_) / 4) * 3].toString(), 5, hight_.toInt() / 4)
-                g.drawString(coordinates[finish_ - 1].toString(), 5, 10)
+                g.drawString(FCoordinates[start_].toString(), 5, FHight.toInt() - 5)
+                g.drawString((FCoordinates[finish_]/4).toString(), 5, (FHight.toInt() / 4) * 3)
+                g.drawString((FCoordinates[finish_]/4 * 2).toString(), 5, FHight.toInt() / 2)
+                g.drawString((FCoordinates[finish_]/4 * 3).toString(), 5, FHight.toInt() / 4)
+                g.drawString(FCoordinates[finish_].toString(), 5, 10)
 
-                g.drawString(sgn.WhatTime((finish - start)/6 * 1 + start, sgn.samplingrate.toFloat()), (wight/6).toInt() * 1 - 15, hight.toInt() + 15)
-                g.drawString(sgn.WhatTime((finish - start)/6 * 2 + start,sgn.samplingrate.toFloat()), (wight/6).toInt() * 2 - 15, hight.toInt() + 15)
-                g.drawString(sgn.WhatTime((finish - start)/6 * 3 + start, sgn.samplingrate.toFloat()), (wight/6).toInt() * 3 - 15, hight.toInt() + 15)
-                g.drawString(sgn.WhatTime((finish - start)/6 * 4 + start, sgn.samplingrate.toFloat()), (wight/6).toInt() * 4 - 15, hight.toInt() + 15)
-                g.drawString(sgn.WhatTime((finish - start)/6 * 5 + start, sgn.samplingrate.toFloat()), (wight/6).toInt() * 5 - 15, hight.toInt() + 15)
+                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*(FourierArrDot.size/10)).toString(), (FWeight/6).toInt() * 1 - 15, FHight.toInt()+10 )
+                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*2)).toString(), (FWeight/6).toInt() * 2 - 15, FHight.toInt()+10 )
+                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*3)).toString(), (FWeight/6).toInt() * 3 - 15, FHight.toInt()+10 )
+                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*4)).toString(), (FWeight/6).toInt() * 4 - 15, FHight.toInt()+10 )
+                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*5)).toString(), (FWeight/6).toInt() * 5 - 15, FHight.toInt() +10)
 
                 g.color = Color.GRAY
                 //g.drawLine(0, hight.toInt() - 5, wight.toInt(), hight.toInt() - 5)
-                g.drawLine(5, hight.toInt()/2, wight.toInt(), hight.toInt()/2)
-                g.drawLine(5, 2, wight.toInt(), 2)
+                g.drawLine(5, FHight.toInt()/2, FWeight.toInt(), FHight.toInt()/2)
+                g.drawLine(5, 2, FWeight.toInt(), 2)
 
-                g.drawLine((wight/6).toInt() * 1, 2, (wight/6).toInt() * 1, hight.toInt())
-                g.drawLine((wight/6).toInt() * 2, 2, (wight/6).toInt() * 2, hight.toInt())
-                g.drawLine((wight/6).toInt() * 3, 2, (wight/6).toInt() * 3, hight.toInt())
-                g.drawLine((wight/6).toInt() * 4, 2, (wight/6).toInt() * 4, hight.toInt())
-                g.drawLine((wight/6).toInt() * 5, 2, (wight/6).toInt() * 5, hight.toInt())
+                g.drawLine((FWeight/6).toInt() * 1, 2, (FWeight/6).toInt() * 1, FHight.toInt())
+                g.drawLine((FWeight/6).toInt() * 2, 2, (FWeight/6).toInt() * 2, FHight.toInt())
+                g.drawLine((FWeight/6).toInt() * 3, 2, (FWeight/6).toInt() * 3, FHight.toInt())
+                g.drawLine((FWeight/6).toInt() * 4, 2, (FWeight/6).toInt() * 4, FHight.toInt())
+                g.drawLine((FWeight/6).toInt() * 5, 2, (FWeight/6).toInt() * 5, FHight.toInt())
             }
 
             if (isPaintApproach == true){
