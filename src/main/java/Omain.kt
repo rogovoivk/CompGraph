@@ -200,7 +200,7 @@ class TestMDI : JFrame() {
                 FourierWind.setContentPane(FourierContents)
                 if (FourierWind.isClosed) {
 
-                    FourierWind = ItemWindow("Спектр Фурье", true, true, false, false)
+                    FourierWind = ItemWindow("Спектр Фурье", false, true, false, false)
                     FourierWind.setBounds(25, 25, 700, 520)
                     FourierWind.addInternalFrameListener(MDIInternalFrameListener())
                     FourierWind.addComponentListener(MDIResizeListener())
@@ -210,7 +210,7 @@ class TestMDI : JFrame() {
                 }
             } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
                 println("тут сработало исключение")
-                FourierWind = ItemWindow("Спектр Фурье", true, true, false, false)
+                FourierWind = ItemWindow("Спектр Фурье", false, true, false, false)
                 FourierWind.setBounds(25, 25, 420, 520)
                 FourierWind.addInternalFrameListener(MDIInternalFrameListener())
                 FourierWind.addComponentListener(MDIResizeListener())
@@ -340,9 +340,10 @@ class TestMDI : JFrame() {
 //                FourierList[i].isCoordinates = true
 //                FourierList[i].FourierChangeDot()
 
-                if (NulElem == 0) transferedArr[0] = 0f
+                //if (NulElem == 0) transferedArr[0] = 0f
                 if (NulElem == 1) transferedArr[0] = transferedArr[1]
                 FourierList[i].GenFourierCanv(700, 200, true, 0, transferSamlesnumber/2, transferedArr)
+                if (NulElem == 0) FourierList[i].FourierArrDot[0] = 200f
                 FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
                 FourierContents.add(FourierList[i].FourieCanv)
                 //sinePlusCosine()
