@@ -200,7 +200,7 @@ class TestMDI : JFrame() {
                 if (FourierWind.isClosed) {
 
                     FourierWind = ItemWindow("Спектр Фурье", true, true, false, false)
-                    FourierWind.setBounds(25, 25, 700, 450)
+                    FourierWind.setBounds(25, 25, 700, 520)
                     FourierWind.addInternalFrameListener(MDIInternalFrameListener())
                     FourierWind.addComponentListener(MDIResizeListener())
                     FourierWind.setContentPane(FourierContents)
@@ -210,7 +210,7 @@ class TestMDI : JFrame() {
             } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
                 println("тут сработало исключение")
                 FourierWind = ItemWindow("Спектр Фурье", true, true, false, false)
-                FourierWind.setBounds(25, 25, 420, 450)
+                FourierWind.setBounds(25, 25, 420, 520)
                 FourierWind.addInternalFrameListener(MDIInternalFrameListener())
                 FourierWind.addComponentListener(MDIResizeListener())
                 FourierWind.setContentPane(FourierContents)
@@ -218,8 +218,9 @@ class TestMDI : JFrame() {
                 FourierWind.isVisible = true
 
             }
+            FourierContents.removeAll()
 
-            FourierWind.setBounds(FourierWind.x, FourierWind.y, 700, FourierList.size*210 + 50)
+            FourierWind.setBounds(FourierWind.x, FourierWind.y, 700, FourierList.size*210 + 70)
             var clearBut: JButton = JButton("Очистить")
             var paramLLabel = JLabel("L")
             var paramLText : JTextField = JTextField("0")

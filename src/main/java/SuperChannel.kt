@@ -366,7 +366,10 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     fun GenFourierCanv(weight_: Int, hight_: Int, FourierCordinates_: Boolean, start_: Int, finish_: Int, arr: Array<Float>){
         FourierArrDot = arr
         FCordinates = arr
-        FHight = hight_
+        if (FourierCordinates_ == true)
+            FHight = hight_ - 10
+        else
+            FHight = hight_
         FWeight = weight_
         FIsCoordinates = FourierCordinates_
 
@@ -464,16 +467,16 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 g.drawLine(2, 2, 2, FHight.toInt())
 
                 g.drawString(FCoordinates[start_].toString(), 5, FHight.toInt() - 5)
-                g.drawString(FCoordinates[start_ + (finish_ - start_) / 4].toString(), 5, (FHight.toInt() / 4) * 3)
-                g.drawString(FCoordinates[start_ + (finish_ - start_) / 2].toString(), 5, FHight.toInt() / 2)
-                g.drawString(FCoordinates[start_ + ((finish_ - start_) / 4) * 3].toString(), 5, FHight.toInt() / 4)
-                g.drawString(FCoordinates[finish_ - 1].toString(), 5, 10)
+                g.drawString((FCoordinates[finish_]/4).toString(), 5, (FHight.toInt() / 4) * 3)
+                g.drawString((FCoordinates[finish_]/4 * 2).toString(), 5, FHight.toInt() / 2)
+                g.drawString((FCoordinates[finish_]/4 * 3).toString(), 5, FHight.toInt() / 4)
+                g.drawString(FCoordinates[finish_].toString(), 5, 10)
 
-//                g.drawString(sgn.WhatTime((FFinish - FStart)/6 * 1 + FStart, sgn.samplingrate.toFloat()), (FWeight/6).toInt() * 1 - 15, FHight.toInt() + 15)
-//                g.drawString(sgn.WhatTime((FFinish - FStart)/6 * 2 + FStart,sgn.samplingrate.toFloat()), (FWeight/6).toInt() * 2 - 15, FHight.toInt() + 15)
-//                g.drawString(sgn.WhatTime((FFinish - FStart)/6 * 3 + FStart, sgn.samplingrate.toFloat()), (FWeight/6).toInt() * 3 - 15, FHight.toInt() + 15)
-//                g.drawString(sgn.WhatTime((FFinish - FStart)/6 * 4 + FStart, sgn.samplingrate.toFloat()), (FWeight/6).toInt() * 4 - 15, FHight.toInt() + 15)
-//                g.drawString(sgn.WhatTime((FFinish - FStart)/6 * 5 + FStart, sgn.samplingrate.toFloat()), (FWeight/6).toInt() * 5 - 15, FHight.toInt() + 15)
+                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*(FourierArrDot.size/10)).toString(), (FWeight/6).toInt() * 1 - 15, FHight.toInt()+10 )
+                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*2)).toString(), (FWeight/6).toInt() * 2 - 15, FHight.toInt()+10 )
+                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*3)).toString(), (FWeight/6).toInt() * 3 - 15, FHight.toInt()+10 )
+                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*4)).toString(), (FWeight/6).toInt() * 4 - 15, FHight.toInt()+10 )
+                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*5)).toString(), (FWeight/6).toInt() * 5 - 15, FHight.toInt() +10)
 
                 g.color = Color.GRAY
                 //g.drawLine(0, hight.toInt() - 5, wight.toInt(), hight.toInt() - 5)
