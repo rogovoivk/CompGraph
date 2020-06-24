@@ -357,7 +357,7 @@ class TestMDI : JFrame() {
 
                 //if (NulElem == 0) transferedArr[0] = 0f
                 if (NulElem == 1) transferedArr[0] = transferedArr[1]
-                FourierList[i].GenFourierCanv(700, 200, true, 0, transferSamlesnumber/2, transferedArr)
+                FourierList[i].GenFourierCanv(700, 200, true, GlobalSignal.vision[0], GlobalSignal.vision[1]/2, transferedArr)
                 FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
                 FourierContents.add(FourierList[i].FourieCanv)
                 //sinePlusCosine()

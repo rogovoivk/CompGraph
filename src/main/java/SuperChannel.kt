@@ -455,9 +455,9 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 var start_ = FStart
                 var finish_ = FFinish
 
-                    FCoordinates.sort()
-                    start_ = 0
-                    finish_ = FCoordinates.size - 1
+                    FCoordinates.sort(FStart, FFinish+1)
+                    start_ = FStart
+                    finish_ = FFinish//FCoordinates.size - 1
 
 
                 g.color = Color.BLACK
