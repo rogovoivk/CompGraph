@@ -364,8 +364,8 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     }
 
     fun GenFourierCanv(weight_: Int, hight_: Int, FourierCordinates_: Boolean, start_: Int, finish_: Int, arr: Array<Float>){
-        FourierArrDot = arr
-        FCoordinates = arr
+        FourierArrDot = arr.copyOf()
+        FCoordinates = arr.copyOf()
         if (FourierCordinates_ == true)
             FHight = hight_ - 10
         else
@@ -398,7 +398,8 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                     if (x1 <= FWeight) {
                         if (FourierArrDot[i].toInt() >= hight) FourierArrDot[i] = FHight.toFloat() - 1
                         //if (arrDot[i].toInt() = hight) arrDot[i] = hight - 1
-                        g.drawLine(x1, FourierArrDot[i].toInt(), x1, FourierArrDot[candleFilling + i - 1].toInt())
+                        if (FIsCoordinates == true && x1 != 50) /**сюда я вставил кастыль + 1**/
+                            g.drawLine(x1, FourierArrDot[i].toInt(), x1, FourierArrDot[candleFilling + i - 1].toInt())
                         if (i > FStart+1){
                             var min0 = 0
                             var max0 = 0
@@ -453,14 +454,11 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 //FCoordinates = sgn.arraChannels[channelNum].copyOf()
                 var start_ = FStart
                 var finish_ = FFinish
-                if (LocalMaxMin == false) {
-                    FCoordinates.sort(0, FCoordinates.size-1)
+
+                    FCoordinates.sort()
                     start_ = 0
-                    finish_ = FCoordinates.size-1
-                }
-                if (LocalMaxMin == true) {
-                    FCoordinates.sort(FStart, FFinish)
-                }
+                    finish_ = FCoordinates.size - 1
+
 
                 g.color = Color.BLACK
                 g.drawLine(0, FHight.toInt() - 2, FWeight.toInt(), FHight.toInt() - 2)
