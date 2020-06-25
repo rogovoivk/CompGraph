@@ -52,7 +52,7 @@ class MosL(channel: ArrayList<SuperChannel>, scBar_: JScrollBar, scbParamArray_:
                 g.color = Color.RED
                 // comp.repaint(); << for cleaning up the intermediate lines : doesnt work :(
                 /**  отрисовываем по контурам  **/
-                var candleFilling: Int = ((chan[index].finish - chan[index].start) / chan[index].wight).toInt()
+                var candleFilling: Int = ((chan[index].finish - chan[index].start) / chan[index].width).toInt()
 
 
 
@@ -62,7 +62,7 @@ class MosL(channel: ArrayList<SuperChannel>, scBar_: JScrollBar, scbParamArray_:
                 if (chan[index].isSmallVision == false) {
                     for (i in chan[index].start..chan[index].finish - candleFilling step candleFilling) {
                         chan[index].arrDot.sort(i, candleFilling + i - 1)
-                        if ((x1 <= chan[index].wight) and (x1 == x)) {
+                        if ((x1 <= chan[index].width) and (x1 == x)) {
                             g.drawLine(x1, chan[index].arrDot[i].toInt() - 5, x1, chan[index].arrDot[candleFilling + i - 1].toInt() + 5 )
                             g.drawLine(x1+1, chan[index].arrDot[i].toInt() - 5, x1 +1, chan[index].arrDot[candleFilling + i - 1].toInt() + 5)
                             g.drawLine(x1-1, chan[index].arrDot[i].toInt() - 5, x1 -1, chan[index].arrDot[candleFilling + i - 1].toInt() + 5)

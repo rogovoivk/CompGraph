@@ -1,7 +1,6 @@
 
 
 import java.awt.*
-import java.awt.FlowLayout.*
 import java.awt.event.*
 import java.beans.PropertyVetoException
 import java.io.File
@@ -133,9 +132,12 @@ class TestMDI : JFrame() {
             UpdateWindowsControl(e.component as ItemWindow)
         }
 
-        override fun componentMoved(e: ComponentEvent) {}
-        override fun componentShown(e: ComponentEvent) {}
-        override fun componentHidden(e: ComponentEvent) {}
+        override fun componentMoved(e: ComponentEvent) {
+            println("test")}
+        override fun componentShown(e: ComponentEvent) {
+            println("test")}
+        override fun componentHidden(e: ComponentEvent) {
+            println("test") }
     }
 
     /**
@@ -177,6 +179,7 @@ class TestMDI : JFrame() {
         lateinit var FourierWind: ItemWindow
         lateinit var StatWind: ItemWindow
         lateinit var SignalWind: ItemWindow
+        lateinit var SpectrogramWind : ItemWindow
         lateinit var GlobalSignal : Signal
         var heightOscillogrammGraph = 200
         var oscillogramList: ArrayList<SuperChannel> = ArrayList()
@@ -212,7 +215,7 @@ class TestMDI : JFrame() {
             } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
                 println("тут сработало исключение")
                 FourierWind = ItemWindow("Спектр Фурье", false, true, false, false)
-                FourierWind.setBounds(25, 25, 420, 520)
+                FourierWind.setBounds(25, 25, 700, 520)
                 FourierWind.addInternalFrameListener(MDIInternalFrameListener())
                 FourierWind.addComponentListener(MDIResizeListener())
                 FourierWind.setContentPane(FourierContents)
@@ -363,6 +366,40 @@ class TestMDI : JFrame() {
                 //sinePlusCosine()
 
             }
+
+        }
+
+        fun CreateSpectrogramWind(spectrogram: SuperChannel){
+            var SpectrogramContents = JPanel(VerticalLayout())
+            try {
+                //println(oscilogramWind.isClosed)
+                SpectrogramWind.setContentPane(SpectrogramContents)
+                if (SpectrogramWind.isClosed) {
+
+                    SpectrogramWind = ItemWindow("Спектр Фурье", true, true, false, false)
+                    SpectrogramWind.setBounds(25, 25, 700, 400)
+                    descPan.add(SpectrogramWind)
+
+                }
+            } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
+                println("тут сработало исключение")
+                SpectrogramWind = ItemWindow("Спектр Фурье", true, true, false, false)
+                SpectrogramWind.setBounds(25, 25, 700, 400)
+                SpectrogramWind.setContentPane(SpectrogramContents)
+                descPan.add(SpectrogramWind)
+            }
+            SpectrogramWind.addInternalFrameListener(MDIInternalFrameListener())
+            SpectrogramWind.addComponentListener(MDIResizeListener())
+            SpectrogramWind.isVisible = true
+            SpectrogramContents.removeAll()
+            SpectrogramWind.setBounds(SpectrogramWind.x, SpectrogramWind.y, SpectrogramWind.width, 300)
+            var SpectWidth = SpectrogramWind.width
+            /** поехали =( **/
+
+
+            spectrogram.GenSpectCanv(calculationSpect(spectrogram.sgn.arraChannels[spectrogram.channelNum], 600f, 200f, 1f), 600f, 200f)
+            spectrogram.SpectrogramCanv.preferredSize = Dimension(600, 200)
+            SpectrogramContents.add(spectrogram.SpectrogramCanv)
 
         }
 
@@ -552,7 +589,7 @@ class TestMDI : JFrame() {
             for (i in 0..oscillogramList.size - 1) {
 
                 println(oscillogramList[i].channelNum)
-                oscillogramList[i].hight = heightOscillogrammGraph.toFloat()
+                oscillogramList[i].height = heightOscillogrammGraph.toFloat()
                 //oscillogramList[i].wight = 600f
                 //oscillogramList[i].ChangeDot(0, oscillogramList[i].arrDot.size - 1)
                 oscillogramList[i].start = oscillogramList[0].start
@@ -561,7 +598,7 @@ class TestMDI : JFrame() {
                 /**Canvas and add comp  */
                 //oscillogramList[i].canv.preferredSize = Dimension(600, 200)
                 oscillogramList[i].canv.preferredSize = Dimension(oscilogramWind.width, heightOscillogrammGraph + 20)
-                oscillogramList[i].wight = (oscilogramWind.width).toFloat()
+                oscillogramList[i].width = (oscilogramWind.width).toFloat()
                 //var oscilloCanvas: Canvas = oscillogramList[i].canv
                 oscillogramList[i].canv.addMouseListener(PopClickListener(oscillogramList[i]))
                 oscillogramContents.add(oscillogramList[i].canv)
@@ -678,7 +715,7 @@ class TestMDI : JFrame() {
                             //oscillogramList[i].canv.addMouseMotionListener(ml)
                             //oscillogramList[i].canv.addMouseListener(PopClickListener(oscillogramList[i]))
                         }
-                        oscillogramList[i].wight = oscilogramWind.width.toFloat()
+                        oscillogramList[i].width = oscilogramWind.width.toFloat()
 
                         /** эти строчки нужны для глобального контроля видимости**/
                         GlobalSignal.vision[0] = first.text.toInt()
@@ -770,6 +807,16 @@ class TestMDI : JFrame() {
                         CreateFourierWind()
                     }
                     add(FourierItem)
+                }
+
+                var SpectogramItem: JMenuItem
+
+                init {
+                    SpectogramItem = JMenuItem("Спектрограмма")
+                    SpectogramItem.addActionListener {
+                        CreateSpectrogramWind(SuperChannel(channel.sgn, channel.channelNum, 600f, 200f, channel.start, channel.finish, true))
+                    }
+                    add(SpectogramItem)
                 }
 
                 var deleteItem: JMenuItem
