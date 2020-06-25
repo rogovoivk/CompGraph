@@ -1,4 +1,3 @@
-import sun.swing.SwingUtilities2
 import kotlin.math.*
 
 fun calculationSpect(arr: Array<Float>, weight: Float, height: Float, coeff_n: Float): Array<Array<Float>>{
