@@ -187,9 +187,10 @@ class TestMDI : JFrame() {
 
         /// GLOBAL VARIABLES FOR SPEKTERS @Bar ///
         var isAmplitude = true
-        var smoothCoeff = 5
+        var smoothCoeff = 0
         var isLinearShowing = true
         var NulElem = 1
+        var arrAfterFFT = Array<Array<Float>>(1, { Array(1, {0f}) })
         ///
 
         /**тут описываю окно Фурье  */
@@ -231,6 +232,7 @@ class TestMDI : JFrame() {
             var initialParam = JComboBox(a)
             val c : Array<String> = arrayOf("Линейный", "Логарифмический")
             var lgOrLin = JComboBox(c)
+            //var visionBut = JButton("Область")
             var update = JButton("Обновить спектры")
 
             /*
@@ -287,6 +289,7 @@ class TestMDI : JFrame() {
             }
             clearBut.addActionListener{
                 FourierList.clear()
+                arrAfterFFT = Array<Array<Float>>(1, { Array(1, {0f}) })
                 FourierContents.removeAll()
             }
 
@@ -298,7 +301,18 @@ class TestMDI : JFrame() {
             FourierContents.add(lgOrLin)
             FourierContents.add(update)
 
+            if (FourierList.size >= arrAfterFFT.size){
+                arrAfterFFT = Array<Array<Float>>(FourierList.size + 1, { Array(GlobalSignal.samplesnumber, {0f}) })
+                for(j in 0..arrAfterFFT.size-2){
+                    var trans = FourierList[j].sgn.arraChannels[FourierList[j].channelNum].copyOf()
+                    val Complex: ComplexArr =
+                        sinePlusCosine(trans, GlobalSignal.samplesnumber)
+                    arrAfterFFT[j] = Complex.Module()
+                }
+            }
+
             for (i in 0..FourierList.size-1){
+
                 //statList[i].channelNum = i
 //                var text = TextArea (GenStatistics(statList[i], GlobalSignal))
 //                text.preferredSize = Dimension(400, 200)
@@ -306,8 +320,9 @@ class TestMDI : JFrame() {
                 //var Complex: ComplexArr = sinePlusCosine(FourierList[i].sgn.arraChannels[FourierList[i].channelNum], FourierList[i].sgn.samplesnumber)
                 //FourierList[i].FourierArrDot = Complex.Module()
                 var transferedArr : Array<Float>
-                var transferSamlesnumber = GlobalSignal.vision[1] - GlobalSignal.vision[0]
-                var copyOrigArr = FourierList[i].sgn.arraChannels[FourierList[i].channelNum].copyOfRange(GlobalSignal.vision[0], GlobalSignal.vision[1])
+                var transferSamlesnumber = arrAfterFFT[i].size //GlobalSignal.vision[1] - GlobalSignal.vision[0]
+                var copyOrigArr = arrAfterFFT[i].copyOf()
+                if (NulElem == 0) copyOrigArr[0] = 0f
                 if (isAmplitude) {
                     if (smoothCoeff == 0) {
                         transferedArr = countAmplitudeSpekter(copyOrigArr,
@@ -342,17 +357,12 @@ class TestMDI : JFrame() {
 
                 //if (NulElem == 0) transferedArr[0] = 0f
                 if (NulElem == 1) transferedArr[0] = transferedArr[1]
-                FourierList[i].GenFourierCanv(700, 200, true, 0, transferSamlesnumber/2, transferedArr)
-                if (NulElem == 0) FourierList[i].FourierArrDot[0] = 200f
+                FourierList[i].GenFourierCanv(700, 200, true, GlobalSignal.vision[0], GlobalSignal.vision[1]/2, transferedArr)
                 FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
                 FourierContents.add(FourierList[i].FourieCanv)
                 //sinePlusCosine()
 
             }
-
-        }
-
-        fun UpdateFourierWind(){
 
         }
 

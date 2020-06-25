@@ -1,30 +1,36 @@
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-fun countAmplitudeSpekter(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float) :Array<Float> {
-    val Complex: ComplexArr =
-        sinePlusCosine(samplesLis, numSamples)
-    val res = Complex.Module()
-    for (i in 0..res.size-1){
-        res[i] *= (1f/sampleRate)
+fun countAmplitudeSpekter(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float, Zero0: Boolean = false) :Array<Float> {
+//    val Complex: ComplexArr =
+//        sinePlusCosine(samplesLis, numSamples)
+//    val res = Complex.Module()
+//    if (Zero0 == true)
+//        res[0] = 0f
+    for (i in 0..samplesLis.size-1){
+        samplesLis[i] *= (1f/sampleRate)
     }
-    return res
+    return samplesLis
 }
 
-fun countSPM(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float) :Array<Float> {
-    val Complex: ComplexArr =
-        sinePlusCosine(samplesLis, numSamples)
-    val res = Complex.Module()
-    for (i in 0..res.size-1){
-        res[i] *= Math.pow((1f/sampleRate).toDouble(), 2.toDouble()).toFloat() * res[i]
+fun countSPM(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float, Zero0: Boolean = false) :Array<Float> {
+//    val Complex: ComplexArr =
+//        sinePlusCosine(samplesLis, numSamples)
+//    val res = Complex.Module()
+//    if (Zero0 == true)
+//        res[0] = 0f
+    for (i in 0..samplesLis.size-1){
+        samplesLis[i] *= Math.pow((1f/sampleRate).toDouble(), 2.toDouble()).toFloat() * samplesLis[i]
     }
-    return res
+    return samplesLis
 }
 
-fun countSmoothingAmplitude(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float, smoothCoeff: Int):Array<Float> {
+fun countSmoothingAmplitude(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float, smoothCoeff: Int, Zero0: Boolean = false):Array<Float> {
     var ans: Array<Float> = countAmplitudeSpekter(samplesLis, numSamples, sampleRate)
     val ansCopy = ans.copyOf()
     for (i in 0..ans.size-1) {
+
+        ans[i] = 0f
         for (j in -smoothCoeff..smoothCoeff) {
 
             println((i + j)%ansCopy.size)
