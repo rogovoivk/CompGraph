@@ -28,30 +28,40 @@ fun countSPM(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float, Zero
 fun countSmoothingAmplitude(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float, smoothCoeff: Int, Zero0: Boolean = false):Array<Float> {
     var ans: Array<Float> = countAmplitudeSpekter(samplesLis, numSamples, sampleRate)
     val ansCopy = ans.copyOf()
-    for (i in 0..ans.size-1) {
+    for (i in 0 until ans.size / 2) {
 
         ans[i] = 0f
         for (j in -smoothCoeff..smoothCoeff) {
-
-            println((i + j)%ansCopy.size)
-            ans[i] += ansCopy[(i + j + ansCopy.size)%ansCopy.size]
+            var index = i + j
+            if (index < 0)
+                index = abs(index)
+            if (index >= ans.size / 2 - 1)
+                index = ans.size / 2 - 2 - j
+            println(index.toInt())
+            ans[i] += ansCopy[index.toInt()] //(i + j + ansCopy.size)%ansCopy.size
 
         }
         ans[i] = ans[i] / (2 * smoothCoeff + 1)
     }
+
     return ans
 }
 
 fun countSmoothingSPM(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float, smoothCoeff: Int):Array<Float> {
-    var ans: Array<Float> = Array<Float>(samplesLis.size-1,{0f})
+    var ans: Array<Float> = countSPM(samplesLis, numSamples, sampleRate)
     val ansCopy = ans.copyOf()
     for (i in 0..ans.size-1) {
 
         ans[i] = 0f
         for (j in -smoothCoeff..smoothCoeff) {
 
-            println((i + j)%ansCopy.size)
-            ans[i] += ansCopy[(i + j + ansCopy.size)%ansCopy.size]
+            var index = i + j
+            if (index < 0)
+                index = abs(index)
+            if (index >= ans.size / 2 - 1)
+                index = ans.size / 2 - 2 - j
+            println(index.toInt())
+            ans[i] += ansCopy[index.toInt()] //(i + j + ansCopy.size)%ansCopy.size
 
         }
         ans[i] = ans[i] / (2 * smoothCoeff + 1)
