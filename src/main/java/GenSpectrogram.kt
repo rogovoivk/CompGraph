@@ -56,9 +56,10 @@ fun calculationSpect(arr: Array<Float>, weight: Float, height: Float, coeff_n: F
         val Complex = sinePlusCosine(workArr[workI], workArr[workI].size)
         var trans = Complex.Module()
         if (L > 1){
-            for(j in 0..N step L){
+            for(j in 0..height.toInt() step L){
                 for (k in j..j+L-1){
-                    ans[ansI][ansJ] += trans[k]
+                    if (k < trans.size)
+                        ans[ansI][ansJ] += trans[k]
                 }
                 ans[ansI][ansJ] /= L.toFloat()
                 ansJ++

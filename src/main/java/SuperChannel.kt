@@ -1,10 +1,11 @@
 
 
 
-import kotlin.math.abs
-
-import java.awt.*
+import java.awt.Canvas
+import java.awt.Color
+import java.awt.Graphics
 import java.awt.event.MouseEvent
+import kotlin.math.abs
 import kotlin.math.ceil
 
 
@@ -46,7 +47,11 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     private var FisSmallVision = false
     /**тут заканчиваются всякие переменные для спектра Фурье **/
     /** всякие переменные для спектраграмм **/
-    var SpectragramMatrix = Array<Array<Float>>(width.toInt(), { Array(height.toInt(), {0f}) })
+    private var SpectragramMatrix = Array<Array<Float>>(width.toInt(), { Array(height.toInt(), {0f}) })
+    private var SpecHight = 0
+    private var SpecWeight = 0
+    private var lvlArr = Array<Float>(6, {0f})
+    private var load = false
     /**тут заканчиваются всякие переменные для спектраграмм **/
 
 
@@ -497,10 +502,35 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     }
 
 
+    fun GenLoad(isLoad: Boolean){
+        load = isLoad
+    }
+
     fun GenSpectCanv(a: Array<Array<Float>>, width_: Float, height_: Float){
-        this@SuperChannel.width = width_
-        this@SuperChannel.height = height_
+        load = false
+        SpecWeight = width_.toInt()
+        SpecHight = height_.toInt()
         SpectragramMatrix = a.copyOf()
+
+        var transLvlArr = Array<Float>(SpecWeight * SpecHight, {0f})
+        var k = 0
+        for (i in 0..SpectragramMatrix.size-1){
+            for (j in 0..SpectragramMatrix[i].size-1){
+                transLvlArr[k] = SpectragramMatrix[i][j]
+                k++
+            }
+        }
+        transLvlArr.sort()
+        lvlArr[0] = transLvlArr[0]
+        lvlArr[1] = transLvlArr[transLvlArr.size/5]
+        lvlArr[2] = transLvlArr[(transLvlArr.size/5) * 2]
+        lvlArr[3] = transLvlArr[(transLvlArr.size/5) * 3]
+        lvlArr[4] = transLvlArr[(transLvlArr.size/5) * 4]
+        lvlArr[5] = transLvlArr[transLvlArr.size-1]
+
+
+
+
 
         var max = SpectragramMatrix[0][0]
         var min = SpectragramMatrix[0][0]
@@ -525,68 +555,58 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     var SpectrogramCanv = object : Canvas() {
         override
         fun paint(g: Graphics) {
+            if(load == false) {
 
 
-            //FourierChangeDot()
-
-            for (i in 0..SpectragramMatrix.size-1){
-                for (j in 0..SpectragramMatrix[i].size-1) {
-                    g.color = Color(0,0,SpectragramMatrix[i][j].toInt())
-                    //g.drawLine(i , j, i, j)
-                    g.drawOval(i,this@SuperChannel.height.toInt() - j, 1, 1)
+                for (i in 0..SpectragramMatrix.size - 1) {
+                    for (j in 0..SpectragramMatrix[i].size - 1) {
+                        g.color = Color(0, 0, SpectragramMatrix[i][j].toInt())
+                        //g.drawLine(i , j, i, j)
+                        g.drawOval(i, SpecHight - j, 1, 1)
+                    }
                 }
-            }
 
-
-
-
-            g.color = Color.WHITE
-            val fm = g.fontMetrics
-            g.drawString(sgn.channelsnames[channelNum], (FWeight/2).toInt(), 15)
-
-//            if (FIsCoordinates == true) {
-//                //FCoordinates = sgn.arraChannels[channelNum].copyOf()
-//                var start_ = FStart
-//                var finish_ = FFinish
-//
-//                FCoordinates.sort(FStart, FFinish+1)
-//                start_ = FStart
-//                finish_ = FFinish//FCoordinates.size - 1
-//
-//
-//                g.color = Color.BLACK
-//                g.drawLine(0, FHight.toInt() - 2, FWeight.toInt(), FHight.toInt() - 2)
-//                g.drawLine(2, 2, 2, FHight.toInt())
-//
-//                g.drawString(FCoordinates[start_].toString(), 5, FHight.toInt() - 5)
-//                g.drawString((FCoordinates[finish_]/4).toString(), 5, (FHight.toInt() / 4) * 3)
-//                g.drawString((FCoordinates[finish_]/4 * 2).toString(), 5, FHight.toInt() / 2)
-//                g.drawString((FCoordinates[finish_]/4 * 3).toString(), 5, FHight.toInt() / 4)
-//                g.drawString(FCoordinates[finish_].toString(), 5, 10)
-//
-//                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*(FourierArrDot.size/10)).toString(), (FWeight/6).toInt() * 1 - 15, FHight.toInt()+10 )
-//                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*2)).toString(), (FWeight/6).toInt() * 2 - 15, FHight.toInt()+10 )
-//                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*3)).toString(), (FWeight/6).toInt() * 3 - 15, FHight.toInt()+10 )
-//                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*4)).toString(), (FWeight/6).toInt() * 4 - 15, FHight.toInt()+10 )
-//                g.drawString(((sgn.samplingrate.toFloat()/FourierArrDot.size)*((FourierArrDot.size/10)*5)).toString(), (FWeight/6).toInt() * 5 - 15, FHight.toInt() +10)
-//
-//                g.color = Color.GRAY
-//                //g.drawLine(0, hight.toInt() - 5, wight.toInt(), hight.toInt() - 5)
-//                g.drawLine(5, FHight.toInt()/2, FWeight.toInt(), FHight.toInt()/2)
-//                g.drawLine(5, 2, FWeight.toInt(), 2)
-//
-//                g.drawLine((FWeight/6).toInt() * 1, 2, (FWeight/6).toInt() * 1, FHight.toInt())
-//                g.drawLine((FWeight/6).toInt() * 2, 2, (FWeight/6).toInt() * 2, FHight.toInt())
-//                g.drawLine((FWeight/6).toInt() * 3, 2, (FWeight/6).toInt() * 3, FHight.toInt())
-//                g.drawLine((FWeight/6).toInt() * 4, 2, (FWeight/6).toInt() * 4, FHight.toInt())
-//                g.drawLine((FWeight/6).toInt() * 5, 2, (FWeight/6).toInt() * 5, FHight.toInt())
-//            }
-
-            if (isPaintApproach == true){
-                if (MouseEvent.BUTTON1_DOWN_MASK == 1){
-                    println("nagata")
-
+                /** отрисовка уровня **/
+                var b: Float = 0f
+                for (i in 0..SpecHight.toInt()) {
+                    //var go = SpecHight.toInt()
+                    //if (SpecHight > 254) go = 254
+                    var coef: Float = 254 / SpecHight.toFloat()
+                    g.drawLine(SpecWeight + 50, i, SpecWeight + 80, i)
+                    g.color = Color(0, 0, b.toInt())
+                    b += coef
                 }
+                g.color = Color.BLACK
+                g.drawString(lvlArr[0].toString(), SpecWeight + 1, 10)
+                g.drawString(lvlArr[1].toString(), SpecWeight + 1, SpecHight / 5)
+                g.drawString(lvlArr[2].toString(), SpecWeight + 1, (SpecHight / 5) * 2)
+                g.drawString(lvlArr[3].toString(), SpecWeight + 1, (SpecHight / 5) * 3)
+                g.drawString(lvlArr[4].toString(), SpecWeight + 1, (SpecHight / 5) * 4)
+                g.drawString(lvlArr[5].toString(), SpecWeight + 1, SpecHight - 5)
+
+
+
+
+
+
+
+
+                g.color = Color.WHITE
+                val fm = g.fontMetrics
+                g.drawString(sgn.channelsnames[channelNum], (FWeight / 2).toInt(), 15)
+                //val font = g.font.deriveFont(50.0f)
+                //g.font = font
+                //g.drawString("loading", (width/2), (height/2))
+
+
+            }else {
+                g.color = Color(0, 0, 255)
+                val fm = g.fontMetrics
+                val font = g.font.deriveFont(50.0f)
+                //g.font = font
+                println(g.font)
+                g.drawString("Loading...", (width / 2).toInt(), 15)
+                g.font.deriveFont(13.0f)
             }
 
         }

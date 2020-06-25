@@ -132,12 +132,9 @@ class TestMDI : JFrame() {
             UpdateWindowsControl(e.component as ItemWindow)
         }
 
-        override fun componentMoved(e: ComponentEvent) {
-            println("test")}
-        override fun componentShown(e: ComponentEvent) {
-            println("test")}
-        override fun componentHidden(e: ComponentEvent) {
-            println("test") }
+        override fun componentMoved(e: ComponentEvent) {}
+        override fun componentShown(e: ComponentEvent) {}
+        override fun componentHidden(e: ComponentEvent) {}
     }
 
     /**
@@ -369,39 +366,115 @@ class TestMDI : JFrame() {
 
         }
 
+        /**тут описываю окно Спектрограмм  */
+
+//        class SpectrogramListner : ComponentListener {
+//            override fun componentResized(e: ComponentEvent) {
+//                UpdateWindowsControl(e.component as ItemWindow)
+//
+//            }
+//
+//            override fun componentMoved(e: ComponentEvent) {}
+//            override fun componentShown(e: ComponentEvent) {}
+//            override fun componentHidden(e: ComponentEvent) {}
+//        }
+
+        fun UpdateSpectrogramWind(spectrogram: SuperChannel, LCoef: Float = 1f){
+            try {
+                var SpectrogramContents = JPanel(VerticalLayout())
+                SpectrogramContents.layout = FlowLayout(FlowLayout.LEFT)
+                //println(oscilogramWind.isClosed)
+                SpectrogramWind.setContentPane(SpectrogramContents)
+
+                SpectrogramWind.addInternalFrameListener(MDIInternalFrameListener())
+                //SpectrogramWind.addComponentListener(MDIResizeListener())
+                SpectrogramWind.isVisible = true
+                SpectrogramContents.removeAll()
+                SpectrogramWind.setBounds(SpectrogramWind.x, SpectrogramWind.y, SpectrogramWind.width, SpectrogramWind.height)
+                var SpectWidth = SpectrogramWind.width
+                var SpectHeight = SpectrogramWind.height - 100
+                /** поехали =( **/
+                var updateBut = JButton("Обновить графики")
+                var LLable = JLabel("Нахлест (от 1 до 10) : ")
+                var LInput = JTextField(LCoef.toString())
+                LInput.preferredSize = Dimension(40, 20)
+                SpectrogramContents.add(updateBut)
+                SpectrogramContents.add(LLable)
+                SpectrogramContents.add(LInput)
+                updateBut.addActionListener{
+                    UpdateSpectrogramWind(spectrogram, LInput.text.toFloat())
+                }
+
+
+                //SpectrogramContents.layout = VerticalLayout()
+                var CopyArr = spectrogram.sgn.arraChannels[spectrogram.channelNum].copyOfRange(GlobalSignal.vision[0], GlobalSignal.vision[1])
+                spectrogram.GenSpectCanv(calculationSpect(CopyArr, SpectWidth.toFloat() - 100, SpectHeight.toFloat(), LInput.text.toFloat()), SpectWidth.toFloat() - 100, SpectHeight.toFloat())
+                spectrogram.SpectrogramCanv.preferredSize = Dimension(SpectWidth, SpectHeight)
+                SpectrogramContents.add(spectrogram.SpectrogramCanv)
+            } catch (e: UninitializedPropertyAccessException) { //вот так пишут код идиоты, дай ПЯТЬ если такой же)
+            }
+        }
+
         fun CreateSpectrogramWind(spectrogram: SuperChannel){
+
+            var LInput = JTextField("1")
+            class SpectrogramListener : ComponentListener {
+                override fun componentResized(e: ComponentEvent) {
+                    UpdateWindowsControl(e.component as ItemWindow)
+                    UpdateSpectrogramWind(spectrogram, LInput.text.toFloat())
+                }
+                override fun componentMoved(e: ComponentEvent) {}
+                override fun componentShown(e: ComponentEvent) {}
+                override fun componentHidden(e: ComponentEvent) {}
+            }
             var SpectrogramContents = JPanel(VerticalLayout())
+            SpectrogramContents.layout = FlowLayout(FlowLayout.LEFT)
+
             try {
                 //println(oscilogramWind.isClosed)
                 SpectrogramWind.setContentPane(SpectrogramContents)
                 if (SpectrogramWind.isClosed) {
 
-                    SpectrogramWind = ItemWindow("Спектр Фурье", true, true, false, false)
-                    SpectrogramWind.setBounds(25, 25, 700, 400)
+                    SpectrogramWind = ItemWindow("Спектрограмма", true, true, false, false)
+                    SpectrogramWind.setBounds(25, 25, 700, 300)
                     descPan.add(SpectrogramWind)
 
                 }
             } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
                 println("тут сработало исключение")
-                SpectrogramWind = ItemWindow("Спектр Фурье", true, true, false, false)
-                SpectrogramWind.setBounds(25, 25, 700, 400)
+                SpectrogramWind = ItemWindow("Спектрограмма", true, true, false, false)
+                SpectrogramWind.setBounds(25, 25, 700, 300)
                 SpectrogramWind.setContentPane(SpectrogramContents)
                 descPan.add(SpectrogramWind)
             }
             SpectrogramWind.addInternalFrameListener(MDIInternalFrameListener())
-            SpectrogramWind.addComponentListener(MDIResizeListener())
+            SpectrogramWind.addComponentListener(SpectrogramListener())
             SpectrogramWind.isVisible = true
             SpectrogramContents.removeAll()
-            SpectrogramWind.setBounds(SpectrogramWind.x, SpectrogramWind.y, SpectrogramWind.width, 300)
+            SpectrogramWind.setBounds(SpectrogramWind.x, SpectrogramWind.y, SpectrogramWind.width, SpectrogramWind.height)
             var SpectWidth = SpectrogramWind.width
+            var SpectHeight = SpectrogramWind.height - 100
             /** поехали =( **/
+            var updateBut = JButton("Обновить графики")
+            var LLable = JLabel("Нахлест (от 1 до 10) : ")
+            LInput.preferredSize = Dimension(40, 20)
+            SpectrogramContents.add(updateBut)
+            SpectrogramContents.add(LLable)
+            SpectrogramContents.add(LInput)
+            updateBut.addActionListener{
+                UpdateSpectrogramWind(spectrogram, LInput.text.toFloat())
+            }
 
 
-            spectrogram.GenSpectCanv(calculationSpect(spectrogram.sgn.arraChannels[spectrogram.channelNum], 600f, 200f, 1f), 600f, 200f)
-            spectrogram.SpectrogramCanv.preferredSize = Dimension(600, 200)
+
+            //SpectrogramContents.layout = VerticalLayout()
+            var CopyArr = spectrogram.sgn.arraChannels[spectrogram.channelNum].copyOfRange(GlobalSignal.vision[0], GlobalSignal.vision[1])
+            spectrogram.GenSpectCanv(calculationSpect(CopyArr, SpectWidth.toFloat() - 100, SpectHeight.toFloat(), LInput.text.toFloat()), SpectWidth.toFloat() - 100, SpectHeight.toFloat())
+            spectrogram.SpectrogramCanv.preferredSize = Dimension(SpectWidth, SpectHeight)
             SpectrogramContents.add(spectrogram.SpectrogramCanv)
 
         }
+
 
 
 

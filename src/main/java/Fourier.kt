@@ -15,9 +15,9 @@ fun sinePlusCosine(samplesLis : Array<Float>, numSamples: Int):ComplexArr {
     val imagPart = DoubleArray(numSamples)
     FFT.fft(samples, realPart, imagPart, numSamples.toLong())
     // print result (omit conjugated complex results)
-    for (i in 0 until 1 + numSamples / 2) {
-        System.out.format("%dHz | % .2f%+.2fi%n", i, realPart[i], imagPart[i])
-    }
+//    for (i in 0 until 1 + numSamples / 2) {
+//        System.out.format("%dHz | % .2f%+.2fi%n", i, realPart[i], imagPart[i])
+//    }
 
     var imag = Array<Float>(imagPart.size, {0f})
     for (i in 0..numSamples-1) {
