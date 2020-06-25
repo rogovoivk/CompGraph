@@ -343,9 +343,9 @@ class TestMDI : JFrame() {
                 }
                 if (!isLinearShowing) {
                     if (isAmplitude)
-                        countAmplitudeSpekterInLg(transferedArr)
+                        transferedArr = countAmplitudeSpekterInLg(transferedArr)
                     else
-                        countSPMInLg(transferedArr)
+                        transferedArr = countSPMInLg(transferedArr)
                 }
 
 //                FourierList[i].FourierArrDot = //countAmplitudeSpekter(FourierList[i].sgn.arraChannels[FourierList[i].channelNum],
@@ -363,6 +363,10 @@ class TestMDI : JFrame() {
                 //sinePlusCosine()
 
             }
+
+        }
+
+        fun UpdateFourierWind(){
 
         }
 

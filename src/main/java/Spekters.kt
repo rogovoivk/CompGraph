@@ -44,15 +44,17 @@ fun countSmoothingAmplitude(samplesLis : Array<Float>, numSamples: Int, sampleRa
 
 fun countSmoothingSPM(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float, smoothCoeff: Int):Array<Float> {
     var ans: Array<Float> = Array<Float>(samplesLis.size-1,{0f})
-    for (i in 0..samplesLis.size-1) {
-        for (j in -smoothCoeff..smoothCoeff) {
-            samplesLis[i] = samplesLis[i] + j
-        }
-        ans += countSPM(samplesLis, numSamples, sampleRate)
-    }
-
+    val ansCopy = ans.copyOf()
     for (i in 0..ans.size-1) {
-        ans[i] = ans[i] * 1f/(2*smoothCoeff + 1)
+
+        ans[i] = 0f
+        for (j in -smoothCoeff..smoothCoeff) {
+
+            println((i + j)%ansCopy.size)
+            ans[i] += ansCopy[(i + j + ansCopy.size)%ansCopy.size]
+
+        }
+        ans[i] = ans[i] / (2 * smoothCoeff + 1)
     }
     return ans
 }
@@ -65,10 +67,13 @@ fun countAmplitudeSpekterInLg(samplesLis : Array<Float>, numSamples: Int, sample
     return res
 }
 
-fun countAmplitudeSpekterInLg(transeredSamplesLis : Array<Float>) {
+fun countAmplitudeSpekterInLg(transeredSamplesLis : Array<Float>): Array<Float> {
+    var res = transeredSamplesLis.copyOf()
     for (i in 0..transeredSamplesLis.size-1) {
-        transeredSamplesLis[i] = 20f * Math.log10(transeredSamplesLis[i].toDouble()).toFloat()
+        if (transeredSamplesLis[i] != 0f)
+            res[i] = 20f * Math.log10(transeredSamplesLis[i].toDouble()).toFloat()
     }
+    return res
 }
 
 fun countSPMInLg(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float): Array<Float> {
@@ -79,8 +84,11 @@ fun countSPMInLg(samplesLis : Array<Float>, numSamples: Int, sampleRate: Float):
     return res
 }
 
-fun countSPMInLg(transeredSamplesLis : Array<Float>) {
+fun countSPMInLg(transeredSamplesLis : Array<Float>): Array<Float> {
+    var res = transeredSamplesLis.copyOf()
     for (i in 0..transeredSamplesLis.size-1) {
-        transeredSamplesLis[i] = 10f * Math.log10(transeredSamplesLis[i].toDouble()).toFloat()
+        if (transeredSamplesLis[i] != 0f)
+            res[i] = 10f * Math.log10(transeredSamplesLis[i].toDouble()).toFloat()
     }
+    return res
 }
