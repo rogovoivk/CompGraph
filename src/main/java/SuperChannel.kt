@@ -35,6 +35,9 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     var MaxForHistogram = 0f
     var hightOfHist = 200//200
 
+    var pal: Array<Array<Int>> = Array(256, { Array(3, {0}) })
+
+
     /** всякие переменные для спектра Фурье **/
     var FourierArrDot : Array<Float> = sgn.arraChannels[channelNum].copyOf()
     //var IsFourier = false
@@ -459,9 +462,9 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 var start_ = FStart
                 var finish_ = FFinish
 
-                    FCoordinates.sort(FStart, FFinish+1)
-                    start_ = FStart
-                    finish_ = FFinish//FCoordinates.size - 1
+                FCoordinates.sort(FStart, FFinish+1)
+                start_ = FStart
+                finish_ = FFinish//FCoordinates.size - 1
 
 
                 g.color = Color.BLACK
@@ -513,6 +516,11 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
         SpecWeight = width_.toInt()
         SpecHight = height_.toInt()
         SpectragramMatrix = a.copyOf()
+        for (i in 0..pal.size - 1) {
+            for (j in 0..pal[i].size - 1) {
+                pal[i][j] = i
+            }
+        }
 
         var transLvlArr = Array<Float>(SpecWeight * SpecHight, {0f})
         var k = 0
@@ -563,9 +571,13 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 for (i in 0..SpectragramMatrix.size - 1) {
                     for (j in 0..SpectragramMatrix[i].size - 1) {
                         //g.color = Color(0, 0, SpectragramMatrix[i][j].toInt())
-                        if ((SpectragramMatrix[i][j]/lvlArr[5]*brith).toInt() < 255)
-                            g.color = Color(0, 0, (SpectragramMatrix[i][j]/lvlArr[5]*brith).toInt())
-                        else {g.color = Color(0, 0, 255)}
+                        var L = 255
+                        if ((SpectragramMatrix[i][j]/lvlArr[5]*brith*256).toInt() < 255){
+                            L = (SpectragramMatrix[i][j]/lvlArr[5]*brith*256).toInt()
+//                            g.color = Color(pal[L][0], pal[L][L], pal[L][2])
+                        }
+                        g.color = Color(pal[L][0], pal[L][1], pal[L][2])
+//                        else {g.color = Color(pal[L][0], pal[L][L], pal[L][2])}
                         //g.drawLine(i , j, i, j)
                         g.drawOval(i, SpecHight - j, 1, 1)
                     }
@@ -574,11 +586,11 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 /** отрисовка уровня **/
                 var b: Float = 0f
                 for (i in 0..SpecHight.toInt()) {
-                    //var go = SpecHight.toInt()
-                    //if (SpecHight > 254) go = 254
-                    var coef: Float = 254 / SpecHight.toFloat()
+                    var go = SpecHight.toInt()
+                    if (SpecHight > 254) go = 254
+                    var coef: Float = (255 / SpecHight).toFloat()
                     g.drawLine(SpecWeight + 50, i, SpecWeight + 80, i)
-                    g.color = Color(0, 0, b.toInt())
+                    g.color = Color(pal[b.toInt()][0], pal[b.toInt()][1], pal[b.toInt()][2])
                     b += coef
                 }
                 g.color = Color.BLACK
