@@ -192,6 +192,11 @@ class TestMDI : JFrame() {
         var NulElem = 1
         var arrAfterFFT = Array<Array<Float>>(1, { Array(1, {0f}) })
         ///
+        ///
+        var LCoef: Float = 1f
+        var BrithC : Int = 1
+        var BrightColourC: String = "Grey"
+        ///
 
         /**тут описываю окно Фурье  */
         fun CreateFourierWind(){
@@ -379,21 +384,8 @@ class TestMDI : JFrame() {
 //            override fun componentHidden(e: ComponentEvent) {}
 //        }
 
-        fun UpdateSpectrogramWind(spectrogram: SuperChannel, LCoef: Float = 1f, BrithC : Int = 1,  BrightColourC: String = "Grey"){
+        fun UpdateSpectrogramWind(spectrogram: SuperChannel){
             try {
-                var SpectrogramContents = JPanel(VerticalLayout())
-                SpectrogramContents.layout = FlowLayout(FlowLayout.LEFT)
-                //println(oscilogramWind.isClosed)
-                SpectrogramWind.setContentPane(SpectrogramContents)
-
-                SpectrogramWind.addInternalFrameListener(MDIInternalFrameListener())
-                //SpectrogramWind.addComponentListener(MDIResizeListener())
-                SpectrogramWind.isVisible = true
-                SpectrogramContents.removeAll()
-                SpectrogramWind.setBounds(SpectrogramWind.x, SpectrogramWind.y, SpectrogramWind.width, SpectrogramWind.height)
-                var SpectWidth = SpectrogramWind.width
-                var SpectHeight = SpectrogramWind.height - 100
-                /** поехали =( **/
                 var updateBut = JButton("Обновить графики")
                 var LLable = JLabel("Нахлест (от 1 до 10) : ")
                 var BrithLable = JLabel("Яркость : ")
@@ -401,6 +393,32 @@ class TestMDI : JFrame() {
                 var Brith = JTextField(BrithC.toString())
                 val a : Array<String> = arrayOf("Grey","Ice", "Hot")
                 var BrightColour = JComboBox(a)
+                class SpectrogramListener : ComponentListener {
+                    override fun componentResized(e: ComponentEvent) {
+                        UpdateWindowsControl(e.component as ItemWindow)
+                       LCoef = LInput.text.toFloat()
+                        BrithC = Brith.text.toInt()
+                        BrightColourC = BrightColour.selectedItem.toString()
+                        UpdateSpectrogramWind(spectrogram)
+                    }
+                    override fun componentMoved(e: ComponentEvent) {}
+                    override fun componentShown(e: ComponentEvent) {}
+                    override fun componentHidden(e: ComponentEvent) {}
+                }
+                var SpectrogramContents = JPanel(VerticalLayout())
+                SpectrogramContents.layout = FlowLayout(FlowLayout.LEFT)
+                //println(oscilogramWind.isClosed)
+                SpectrogramWind.setContentPane(SpectrogramContents)
+
+                SpectrogramWind.addInternalFrameListener(MDIInternalFrameListener())
+                SpectrogramWind.addComponentListener(SpectrogramListener())
+                //SpectrogramWind.addComponentListener(MDIResizeListener())
+                SpectrogramWind.isVisible = true
+                SpectrogramContents.removeAll()
+                SpectrogramWind.setBounds(SpectrogramWind.x, SpectrogramWind.y, SpectrogramWind.width, SpectrogramWind.height)
+                var SpectWidth = SpectrogramWind.width
+                var SpectHeight = SpectrogramWind.height - 100
+                /** поехали =( **/
                 BrightColour.selectedItem = BrightColourC
                 LInput.preferredSize = Dimension(40, 20)
                 Brith.preferredSize = Dimension(40, 20)
@@ -411,9 +429,24 @@ class TestMDI : JFrame() {
                 SpectrogramContents.add(Brith)
                 SpectrogramContents.add(BrightColour)
                 updateBut.addActionListener{
-                    //if (LInput.text.toFloat() != LCoef)
-                        UpdateSpectrogramWind(spectrogram, LInput.text.toFloat(), Brith.text.toInt(),  BrightColour.selectedItem.toString())
-                    //else
+//                    if (BrightColour.selectedItem != BrightColourC && Brith.text.toInt() !=BrithC){
+//                        spectrogram.ChangeSpecParam(Brith.text.toInt(), BrightColour.selectedItem.toString())
+//                        spectrogram.SpectrogramCanv.paint(spectrogram.SpectrogramCanv.graphics)
+//                    }
+//                    else
+                    if (LCoef == LInput.text.toFloat() && (BrithC != Brith.text.toInt() || BrightColourC != BrightColour.selectedItem.toString()))
+                    {
+                        BrithC = Brith.text.toInt()
+                        BrightColourC = BrightColour.selectedItem.toString()
+                        spectrogram.ChangeSpecParam(Brith.text.toInt(), BrightColour.selectedItem.toString())
+                        spectrogram.SpectrogramCanv.paint(spectrogram.SpectrogramCanv.graphics)
+                    }
+                    else {
+                        LCoef = LInput.text.toFloat()
+                        BrithC = Brith.text.toInt()
+                        BrightColourC = BrightColour.selectedItem.toString()
+                        UpdateSpectrogramWind(spectrogram)
+                    }
                 }
 
 
@@ -431,15 +464,6 @@ class TestMDI : JFrame() {
 
             var LInput = JTextField("1")
             var Brith = JTextField("1")
-            class SpectrogramListener : ComponentListener {
-                override fun componentResized(e: ComponentEvent) {
-                    UpdateWindowsControl(e.component as ItemWindow)
-                    UpdateSpectrogramWind(spectrogram, LInput.text.toFloat(), Brith.text.toInt())
-                }
-                override fun componentMoved(e: ComponentEvent) {}
-                override fun componentShown(e: ComponentEvent) {}
-                override fun componentHidden(e: ComponentEvent) {}
-            }
             var SpectrogramContents = JPanel(VerticalLayout())
             SpectrogramContents.layout = FlowLayout(FlowLayout.LEFT)
 
@@ -461,7 +485,6 @@ class TestMDI : JFrame() {
                 descPan.add(SpectrogramWind)
             }
             SpectrogramWind.addInternalFrameListener(MDIInternalFrameListener())
-            SpectrogramWind.addComponentListener(SpectrogramListener())
             SpectrogramWind.isVisible = true
             SpectrogramContents.removeAll()
             SpectrogramWind.setBounds(SpectrogramWind.x, SpectrogramWind.y, SpectrogramWind.width, SpectrogramWind.height)
@@ -470,7 +493,7 @@ class TestMDI : JFrame() {
             /** поехали =( **/
 
 
-            UpdateSpectrogramWind(spectrogram, LInput.text.toFloat(), Brith.text.toInt())
+            UpdateSpectrogramWind(spectrogram)
 
 
             //SpectrogramContents.layout = VerticalLayout()

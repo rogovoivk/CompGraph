@@ -564,6 +564,11 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
         }
     }
 
+    fun ChangeSpecParam (brith_: Int, colour: String){
+        bright = brith_
+        SpecColour = colour
+    }
+
     var SpectrogramCanv = object : Canvas() {
         override
         fun paint(g: Graphics) {
