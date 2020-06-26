@@ -52,6 +52,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     private var SpecWeight = 0
     private var lvlArr = Array<Float>(6, {0f})
     private var load = false
+    private var brith : Int = 1
     /**тут заканчиваются всякие переменные для спектраграмм **/
 
 
@@ -506,7 +507,8 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
         load = isLoad
     }
 
-    fun GenSpectCanv(a: Array<Array<Float>>, width_: Float, height_: Float){
+    fun GenSpectCanv(a: Array<Array<Float>>, width_: Float, height_: Float, brith_: Int){
+        brith = brith_
         load = false
         SpecWeight = width_.toInt()
         SpecHight = height_.toInt()
@@ -560,7 +562,10 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 
                 for (i in 0..SpectragramMatrix.size - 1) {
                     for (j in 0..SpectragramMatrix[i].size - 1) {
-                        g.color = Color(0, 0, SpectragramMatrix[i][j].toInt())
+                        //g.color = Color(0, 0, SpectragramMatrix[i][j].toInt())
+                        if ((SpectragramMatrix[i][j]/lvlArr[5]*brith).toInt() < 255)
+                            g.color = Color(0, 0, (SpectragramMatrix[i][j]/lvlArr[5]*brith).toInt())
+                        else {g.color = Color(0, 0, 255)}
                         //g.drawLine(i , j, i, j)
                         g.drawOval(i, SpecHight - j, 1, 1)
                     }

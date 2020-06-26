@@ -379,7 +379,7 @@ class TestMDI : JFrame() {
 //            override fun componentHidden(e: ComponentEvent) {}
 //        }
 
-        fun UpdateSpectrogramWind(spectrogram: SuperChannel, LCoef: Float = 1f){
+        fun UpdateSpectrogramWind(spectrogram: SuperChannel, LCoef: Float = 1f, BrithC : Int = 1){
             try {
                 var SpectrogramContents = JPanel(VerticalLayout())
                 SpectrogramContents.layout = FlowLayout(FlowLayout.LEFT)
@@ -396,19 +396,27 @@ class TestMDI : JFrame() {
                 /** поехали =( **/
                 var updateBut = JButton("Обновить графики")
                 var LLable = JLabel("Нахлест (от 1 до 10) : ")
+                var BrithLable = JLabel("Яркость : ")
                 var LInput = JTextField(LCoef.toString())
+                var Brith = JTextField(BrithC.toString())
                 LInput.preferredSize = Dimension(40, 20)
+                Brith.preferredSize = Dimension(40, 20)
                 SpectrogramContents.add(updateBut)
                 SpectrogramContents.add(LLable)
                 SpectrogramContents.add(LInput)
+                SpectrogramContents.add(BrithLable)
+                SpectrogramContents.add(Brith)
                 updateBut.addActionListener{
-                    UpdateSpectrogramWind(spectrogram, LInput.text.toFloat())
+                    UpdateSpectrogramWind(spectrogram, LInput.text.toFloat(), Brith.text.toInt())
                 }
 
 
                 //SpectrogramContents.layout = VerticalLayout()
+                println()
+                println(Brith.text.toInt())
+                println(Brith.text.toString())
                 var CopyArr = spectrogram.sgn.arraChannels[spectrogram.channelNum].copyOfRange(GlobalSignal.vision[0], GlobalSignal.vision[1])
-                spectrogram.GenSpectCanv(calculationSpect(CopyArr, SpectWidth.toFloat() - 100, SpectHeight.toFloat(), LInput.text.toFloat()), SpectWidth.toFloat() - 100, SpectHeight.toFloat())
+                spectrogram.GenSpectCanv(calculationSpect(CopyArr, SpectWidth.toFloat() - 100, SpectHeight.toFloat(), LInput.text.toFloat()), SpectWidth.toFloat() - 100, SpectHeight.toFloat(), Brith.text.toInt())
                 spectrogram.SpectrogramCanv.preferredSize = Dimension(SpectWidth, SpectHeight)
                 SpectrogramContents.add(spectrogram.SpectrogramCanv)
             } catch (e: UninitializedPropertyAccessException) { //вот так пишут код идиоты, дай ПЯТЬ если такой же)
@@ -418,10 +426,11 @@ class TestMDI : JFrame() {
         fun CreateSpectrogramWind(spectrogram: SuperChannel){
 
             var LInput = JTextField("1")
+            var Brith = JTextField("1")
             class SpectrogramListener : ComponentListener {
                 override fun componentResized(e: ComponentEvent) {
                     UpdateWindowsControl(e.component as ItemWindow)
-                    UpdateSpectrogramWind(spectrogram, LInput.text.toFloat())
+                    UpdateSpectrogramWind(spectrogram, LInput.text.toFloat(), Brith.text.toInt())
                 }
                 override fun componentMoved(e: ComponentEvent) {}
                 override fun componentShown(e: ComponentEvent) {}
@@ -457,19 +466,22 @@ class TestMDI : JFrame() {
             /** поехали =( **/
             var updateBut = JButton("Обновить графики")
             var LLable = JLabel("Нахлест (от 1 до 10) : ")
+            var BrithLable = JLabel("Яркость : ")
             LInput.preferredSize = Dimension(40, 20)
+            Brith.preferredSize = Dimension(40, 20)
             SpectrogramContents.add(updateBut)
             SpectrogramContents.add(LLable)
             SpectrogramContents.add(LInput)
+            SpectrogramContents.add(BrithLable)
+            SpectrogramContents.add(Brith)
             updateBut.addActionListener{
-                UpdateSpectrogramWind(spectrogram, LInput.text.toFloat())
+                UpdateSpectrogramWind(spectrogram, LInput.text.toFloat(), Brith.text.toInt())
             }
-
 
 
             //SpectrogramContents.layout = VerticalLayout()
             var CopyArr = spectrogram.sgn.arraChannels[spectrogram.channelNum].copyOfRange(GlobalSignal.vision[0], GlobalSignal.vision[1])
-            spectrogram.GenSpectCanv(calculationSpect(CopyArr, SpectWidth.toFloat() - 100, SpectHeight.toFloat(), LInput.text.toFloat()), SpectWidth.toFloat() - 100, SpectHeight.toFloat())
+            spectrogram.GenSpectCanv(calculationSpect(CopyArr, SpectWidth.toFloat() - 100, SpectHeight.toFloat(), LInput.text.toFloat()), SpectWidth.toFloat() - 100, SpectHeight.toFloat(), Brith.text.toInt())
             spectrogram.SpectrogramCanv.preferredSize = Dimension(SpectWidth, SpectHeight)
             SpectrogramContents.add(spectrogram.SpectrogramCanv)
 
