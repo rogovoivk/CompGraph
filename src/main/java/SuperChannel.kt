@@ -622,10 +622,9 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 
 
 
-
-
-
                 g.color = Color.WHITE
+                if (SpecColour == "Grey")
+                    g.color = Color.BLACK
                 val fm = g.fontMetrics
                 g.drawString(sgn.channelsnames[channelNum], (FWeight / 2).toInt(), 15)
                 //val font = g.font.deriveFont(50.0f)

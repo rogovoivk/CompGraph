@@ -396,7 +396,7 @@ class TestMDI : JFrame() {
                 class SpectrogramListener : ComponentListener {
                     override fun componentResized(e: ComponentEvent) {
                         UpdateWindowsControl(e.component as ItemWindow)
-                       LCoef = LInput.text.toFloat()
+                        LCoef = LInput.text.toFloat()
                         BrithC = Brith.text.toInt()
                         BrightColourC = BrightColour.selectedItem.toString()
                         UpdateSpectrogramWind(spectrogram)
