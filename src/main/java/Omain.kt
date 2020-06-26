@@ -227,9 +227,9 @@ class TestMDI : JFrame() {
             var paramLLabel = JLabel("L")
             var paramLText : JTextField = JTextField("0")
             val a : Array<String> = arrayOf("x(0) = 0","x(0) = |x(1)|", " - ")
+            var initialParam = JComboBox(a)
             val b : Array<String> = arrayOf("Амплитудный спектр", "СПМ")
             var curSpectrum = JComboBox(b)
-            var initialParam = JComboBox(a)
             val c : Array<String> = arrayOf("Линейный", "Логарифмический")
             var lgOrLin = JComboBox(c)
             //var visionBut = JButton("Область")
@@ -379,7 +379,7 @@ class TestMDI : JFrame() {
 //            override fun componentHidden(e: ComponentEvent) {}
 //        }
 
-        fun UpdateSpectrogramWind(spectrogram: SuperChannel, LCoef: Float = 1f, BrithC : Int = 1){
+        fun UpdateSpectrogramWind(spectrogram: SuperChannel, LCoef: Float = 1f, BrithC : Int = 1,  BrightColourC: String = "Grey"){
             try {
                 var SpectrogramContents = JPanel(VerticalLayout())
                 SpectrogramContents.layout = FlowLayout(FlowLayout.LEFT)
@@ -399,6 +399,9 @@ class TestMDI : JFrame() {
                 var BrithLable = JLabel("Яркость : ")
                 var LInput = JTextField(LCoef.toString())
                 var Brith = JTextField(BrithC.toString())
+                val a : Array<String> = arrayOf("Grey","Ice", "Hot")
+                var BrightColour = JComboBox(a)
+                BrightColour.selectedItem = BrightColourC
                 LInput.preferredSize = Dimension(40, 20)
                 Brith.preferredSize = Dimension(40, 20)
                 SpectrogramContents.add(updateBut)
@@ -406,17 +409,18 @@ class TestMDI : JFrame() {
                 SpectrogramContents.add(LInput)
                 SpectrogramContents.add(BrithLable)
                 SpectrogramContents.add(Brith)
+                SpectrogramContents.add(BrightColour)
                 updateBut.addActionListener{
-                    UpdateSpectrogramWind(spectrogram, LInput.text.toFloat(), Brith.text.toInt())
+                    //if (LInput.text.toFloat() != LCoef)
+                        UpdateSpectrogramWind(spectrogram, LInput.text.toFloat(), Brith.text.toInt(),  BrightColour.selectedItem.toString())
+                    //else
                 }
 
 
                 //SpectrogramContents.layout = VerticalLayout()
-                println()
-                println(Brith.text.toInt())
-                println(Brith.text.toString())
+
                 var CopyArr = spectrogram.sgn.arraChannels[spectrogram.channelNum].copyOfRange(GlobalSignal.vision[0], GlobalSignal.vision[1])
-                spectrogram.GenSpectCanv(calculationSpect(CopyArr, SpectWidth.toFloat() - 100, SpectHeight.toFloat(), LInput.text.toFloat()), SpectWidth.toFloat() - 100, SpectHeight.toFloat(), Brith.text.toInt())
+                spectrogram.GenSpectCanv(calculationSpect(CopyArr, SpectWidth.toFloat() - 100, SpectHeight.toFloat(), LInput.text.toFloat()), SpectWidth.toFloat() - 100, SpectHeight.toFloat(), Brith.text.toInt(), BrightColour.selectedItem.toString())
                 spectrogram.SpectrogramCanv.preferredSize = Dimension(SpectWidth, SpectHeight)
                 SpectrogramContents.add(spectrogram.SpectrogramCanv)
             } catch (e: UninitializedPropertyAccessException) { //вот так пишут код идиоты, дай ПЯТЬ если такой же)

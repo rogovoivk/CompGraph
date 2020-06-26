@@ -55,7 +55,8 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     private var SpecWeight = 0
     private var lvlArr = Array<Float>(6, {0f})
     private var load = false
-    var bright : Int = 1
+    private var bright : Int = 1
+    private var SpecColour : String = "Grey"
     /**тут заканчиваются всякие переменные для спектраграмм **/
 
 
@@ -510,7 +511,8 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
         load = isLoad
     }
 
-    fun GenSpectCanv(a: Array<Array<Float>>, width_: Float, height_: Float, brith_: Int){
+    fun GenSpectCanv(a: Array<Array<Float>>, width_: Float, height_: Float, brith_: Int, colour: String){
+        SpecColour = colour
         bright = brith_
         load = false
         SpecWeight = width_.toInt()
@@ -576,7 +578,12 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                             L = (SpectragramMatrix[i][j]/lvlArr[5]*bright*256).toInt()
 //                            g.color = Color(pal[L][0], pal[L][L], pal[L][2])
                         }
-                        g.color = Color(pal[L][0], pal[L][1], pal[L][2])
+                        if (SpecColour == "Ice")
+                            g.color = Color(0, pal[L][1], pal[L][2])
+                        if (SpecColour == "Hot")
+                            g.color = Color(pal[L][0], pal[L][1], 0)
+                        if (SpecColour == "Grey")
+                            g.color = Color(pal[L][0], pal[L][1], pal[L][2])
 //                        else {g.color = Color(pal[L][0], pal[L][L], pal[L][2])}
                         //g.drawLine(i , j, i, j)
                         g.drawOval(i, SpecHight - j, 1, 1)
@@ -588,8 +595,13 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 for (i in 0..SpecHight) {
                     //var go = SpecHight.toInt()
                     //if (SpecHight > 254) go = 254
+                    if (SpecColour == "Grey")
+                        g.color = Color(pal[b.toInt()][0], pal[b.toInt()][1], pal[b.toInt()][2])
+                    if (SpecColour == "Hot")
+                        g.color = Color(pal[b.toInt()][0], pal[b.toInt()][1], 0)
+                    if (SpecColour == "Ice")
+                        g.color = Color(0, pal[b.toInt()][1], pal[b.toInt()][2])
                     g.drawLine(SpecWeight + 50, i, SpecWeight + 80, i)
-                    g.color = Color(pal[b.toInt()][0], pal[b.toInt()][1], pal[b.toInt()][2])
                     var coef: Float = (255 / SpecHight.toFloat()).toFloat()
                     b += coef
                 }
