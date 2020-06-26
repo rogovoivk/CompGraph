@@ -464,26 +464,16 @@ class TestMDI : JFrame() {
             var SpectWidth = SpectrogramWind.width
             var SpectHeight = SpectrogramWind.height - 100
             /** поехали =( **/
-            var updateBut = JButton("Обновить графики")
-            var LLable = JLabel("Нахлест (от 1 до 10) : ")
-            var BrithLable = JLabel("Яркость : ")
-            LInput.preferredSize = Dimension(40, 20)
-            Brith.preferredSize = Dimension(40, 20)
-            SpectrogramContents.add(updateBut)
-            SpectrogramContents.add(LLable)
-            SpectrogramContents.add(LInput)
-            SpectrogramContents.add(BrithLable)
-            SpectrogramContents.add(Brith)
-            updateBut.addActionListener{
-                UpdateSpectrogramWind(spectrogram, LInput.text.toFloat(), Brith.text.toInt())
-            }
+
+
+            UpdateSpectrogramWind(spectrogram, LInput.text.toFloat(), Brith.text.toInt())
 
 
             //SpectrogramContents.layout = VerticalLayout()
-            var CopyArr = spectrogram.sgn.arraChannels[spectrogram.channelNum].copyOfRange(GlobalSignal.vision[0], GlobalSignal.vision[1])
-            spectrogram.GenSpectCanv(calculationSpect(CopyArr, SpectWidth.toFloat() - 100, SpectHeight.toFloat(), LInput.text.toFloat()), SpectWidth.toFloat() - 100, SpectHeight.toFloat(), Brith.text.toInt())
-            spectrogram.SpectrogramCanv.preferredSize = Dimension(SpectWidth, SpectHeight)
-            SpectrogramContents.add(spectrogram.SpectrogramCanv)
+//            var CopyArr = spectrogram.sgn.arraChannels[spectrogram.channelNum].copyOfRange(GlobalSignal.vision[0], GlobalSignal.vision[1])
+//            spectrogram.GenSpectCanv(calculationSpect(CopyArr, SpectWidth.toFloat() - 100, SpectHeight.toFloat(), LInput.text.toFloat()), SpectWidth.toFloat() - 100, SpectHeight.toFloat(), Brith.text.toInt())
+//            spectrogram.SpectrogramCanv.preferredSize = Dimension(SpectWidth, SpectHeight)
+//            SpectrogramContents.add(spectrogram.SpectrogramCanv)
 
         }
 

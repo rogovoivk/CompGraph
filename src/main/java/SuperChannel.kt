@@ -55,7 +55,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     private var SpecWeight = 0
     private var lvlArr = Array<Float>(6, {0f})
     private var load = false
-    private var brith : Int = 1
+    var bright : Int = 1
     /**тут заканчиваются всякие переменные для спектраграмм **/
 
 
@@ -511,7 +511,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     }
 
     fun GenSpectCanv(a: Array<Array<Float>>, width_: Float, height_: Float, brith_: Int){
-        brith = brith_
+        bright = brith_
         load = false
         SpecWeight = width_.toInt()
         SpecHight = height_.toInt()
@@ -572,8 +572,8 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                     for (j in 0..SpectragramMatrix[i].size - 1) {
                         //g.color = Color(0, 0, SpectragramMatrix[i][j].toInt())
                         var L = 255
-                        if ((SpectragramMatrix[i][j]/lvlArr[5]*brith*256).toInt() < 255){
-                            L = (SpectragramMatrix[i][j]/lvlArr[5]*brith*256).toInt()
+                        if ((SpectragramMatrix[i][j]/lvlArr[5]*bright*256).toInt() < 255){
+                            L = (SpectragramMatrix[i][j]/lvlArr[5]*bright*256).toInt()
 //                            g.color = Color(pal[L][0], pal[L][L], pal[L][2])
                         }
                         g.color = Color(pal[L][0], pal[L][1], pal[L][2])
@@ -585,12 +585,12 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
 
                 /** отрисовка уровня **/
                 var b: Float = 0f
-                for (i in 0..SpecHight.toInt()) {
-                    var go = SpecHight.toInt()
-                    if (SpecHight > 254) go = 254
-                    var coef: Float = (255 / SpecHight).toFloat()
+                for (i in 0..SpecHight) {
+                    //var go = SpecHight.toInt()
+                    //if (SpecHight > 254) go = 254
                     g.drawLine(SpecWeight + 50, i, SpecWeight + 80, i)
                     g.color = Color(pal[b.toInt()][0], pal[b.toInt()][1], pal[b.toInt()][2])
+                    var coef: Float = (255 / SpecHight.toFloat()).toFloat()
                     b += coef
                 }
                 g.color = Color.BLACK
