@@ -10,8 +10,16 @@ import java.util.*
 fun FileToSignal(f: File) : Signal{
     val listSTR: List<String> = f.readLines()
     val channelsNumber: Int = listSTR[1].toInt()
-    val samplesNumber: Int = listSTR[3].toInt()
-    val samplingRate: String = listSTR[5].toString()
+    var tranceSN :String = listSTR[3]
+    while (tranceSN[0] == ' '){
+        tranceSN = tranceSN.substring(1)
+    }
+    val samplesNumber: Int = tranceSN.toInt()
+    var tranceSR :String = listSTR[5]
+    while (tranceSR[0] == ' '){
+        tranceSR = tranceSR.substring(1)
+    }
+    val samplingRate: String = tranceSR
     val startDate: String = listSTR[7]
     var startTime: String = listSTR[9]
     startTime = (startTime[0].toString() + startTime[1].toString() + startTime[2].toString() + startTime[3].toString() + startTime[4].toString() + startTime[5].toString() + startTime[6].toString() + startTime[7].toString()).toString()
@@ -22,7 +30,8 @@ fun FileToSignal(f: File) : Signal{
         if (listSTR[11][i] != ';' && listSTR[11][i] != '\n') {channelsnames[cout] = channelsnames[cout] + listSTR[11][i]}
         if (listSTR[11][i] == ';') {
             cout++
-            channelsnames[cout] = ""
+            if (i != listSTR[11].length-1)
+                channelsnames[cout] = ""
         }
     }
 //    for (i in 0..channelsnames.size-1){
