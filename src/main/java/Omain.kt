@@ -380,7 +380,7 @@ class TestMDI : JFrame() {
                 var BrithLable = JLabel("Яркость : ")
                 var LInput = JTextField(LCoef.toString())
                 var Brith = JTextField(BrithC.toString())
-                val a : Array<String> = arrayOf("Grey","Ice", "Hot")
+                val a : Array<String> = arrayOf("Grey","Ice", "Tropic")
                 var BrightColour = JComboBox(a)
                 class SpectrogramListener : ComponentListener {
                     override fun componentResized(e: ComponentEvent) {

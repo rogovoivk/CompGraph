@@ -53,7 +53,9 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
     private var SpectragramMatrix = Array<Array<Float>>(width.toInt(), { Array(height.toInt(), {0f}) })
     private var SpecHight = 0
     private var SpecWeight = 0
-    private var lvlArr = Array<Float>(6, {0f})
+    //private var lvlArr = Array<Float>(6, {0f})
+    private var SpecMax: Float = 0f
+    private var SpecMin: Float = 0f
     private var load = false
     private var bright : Int = 1
     private var SpecColour : String = "Grey"
@@ -148,6 +150,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                     arrDot.sort(i, candleFilling + i - 1)
                     if (x1 <= this@SuperChannel.width) {
                         if (arrDot[i].toInt() >= this@SuperChannel.height) arrDot[i] = this@SuperChannel.height - 1
+                        if (arrDot[i].toInt() == 0) arrDot[i] = 1f
                         //if (arrDot[i].toInt() = hight) arrDot[i] = hight - 1
                         g.drawLine(x1, arrDot[i].toInt(), x1, arrDot[candleFilling + i - 1].toInt())
                         if (i > start+1){
@@ -219,10 +222,10 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 g.drawLine(2, 2, 2, this@SuperChannel.height.toInt())
 
                 g.drawString(coordinates[start_].toString(), 5, hight_.toInt() - 5)
-                g.drawString(coordinates[start_ + (finish_ - start_) / 4].toString(), 5, (hight_.toInt() / 4) * 3)
-                g.drawString(coordinates[start_ + (finish_ - start_) / 2].toString(), 5, hight_.toInt() / 2)
-                g.drawString(coordinates[start_ + ((finish_ - start_) / 4) * 3].toString(), 5, hight_.toInt() / 4)
-                g.drawString(coordinates[finish_ - 1].toString(), 5, 10)
+                g.drawString((coordinates[finish_]/4f).toString(), 5, (hight_.toInt() / 4) * 3)
+                g.drawString((coordinates[finish_]/3f).toString(), 5, hight_.toInt() / 2)
+                g.drawString((coordinates[finish_]/2f).toString(), 5, hight_.toInt() / 4)
+                g.drawString(coordinates[finish_].toString(), 5, 10)
 
                 g.drawString(sgn.WhatTime((finish - start)/6 * 1 + start, sgn.samplingrate.toFloat()), (this@SuperChannel.width /6).toInt() * 1 - 15, this@SuperChannel.height.toInt() + 15)
                 g.drawString(sgn.WhatTime((finish - start)/6 * 2 + start,sgn.samplingrate.toFloat()), (this@SuperChannel.width /6).toInt() * 2 - 15, this@SuperChannel.height.toInt() + 15)
@@ -533,12 +536,14 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
             }
         }
         transLvlArr.sort()
-        lvlArr[0] = transLvlArr[0]
-        lvlArr[1] = transLvlArr[transLvlArr.size/5]
-        lvlArr[2] = transLvlArr[(transLvlArr.size/5) * 2]
-        lvlArr[3] = transLvlArr[(transLvlArr.size/5) * 3]
-        lvlArr[4] = transLvlArr[(transLvlArr.size/5) * 4]
-        lvlArr[5] = transLvlArr[transLvlArr.size-1]
+        SpecMax = transLvlArr[transLvlArr.size-1]
+        SpecMin = transLvlArr[0]
+//        lvlArr[0] = transLvlArr[0]
+//        lvlArr[1] = transLvlArr[transLvlArr.size/5]
+//        lvlArr[2] = transLvlArr[(transLvlArr.size/5) * 2]
+//        lvlArr[3] = transLvlArr[(transLvlArr.size/5) * 3]
+//        lvlArr[4] = transLvlArr[(transLvlArr.size/5) * 4]
+//        lvlArr[5] = transLvlArr[transLvlArr.size-1]
 
 
 
@@ -579,13 +584,13 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                     for (j in 0..SpectragramMatrix[i].size - 1) {
                         //g.color = Color(0, 0, SpectragramMatrix[i][j].toInt())
                         var L = 255
-                        if ((SpectragramMatrix[i][j]/lvlArr[5]*bright*256).toInt() < 255){
-                            L = (SpectragramMatrix[i][j]/lvlArr[5]*bright*256).toInt()
+                        if ((SpectragramMatrix[i][j]/SpecMax*bright*256).toInt() < 255){
+                            L = (SpectragramMatrix[i][j]/SpecMax*bright*256).toInt()
 //                            g.color = Color(pal[L][0], pal[L][L], pal[L][2])
                         }
                         if (SpecColour == "Ice")
                             g.color = Color(0, pal[L][1], pal[L][2])
-                        if (SpecColour == "Hot")
+                        if (SpecColour == "Tropic")
                             g.color = Color(pal[L][0], pal[L][1], 0)
                         if (SpecColour == "Grey")
                             g.color = Color(pal[L][0], pal[L][1], pal[L][2])
@@ -602,7 +607,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                     //if (SpecHight > 254) go = 254
                     if (SpecColour == "Grey")
                         g.color = Color(pal[b.toInt()][0], pal[b.toInt()][1], pal[b.toInt()][2])
-                    if (SpecColour == "Hot")
+                    if (SpecColour == "Tropic")
                         g.color = Color(pal[b.toInt()][0], pal[b.toInt()][1], 0)
                     if (SpecColour == "Ice")
                         g.color = Color(0, pal[b.toInt()][1], pal[b.toInt()][2])
@@ -611,12 +616,12 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                     b += coef
                 }
                 g.color = Color.BLACK
-                g.drawString(lvlArr[0].toString(), SpecWeight + 1, 10)
-                g.drawString(lvlArr[1].toString(), SpecWeight + 1, SpecHight / 5)
-                g.drawString(lvlArr[2].toString(), SpecWeight + 1, (SpecHight / 5) * 2)
-                g.drawString(lvlArr[3].toString(), SpecWeight + 1, (SpecHight / 5) * 3)
-                g.drawString(lvlArr[4].toString(), SpecWeight + 1, (SpecHight / 5) * 4)
-                g.drawString(lvlArr[5].toString(), SpecWeight + 1, SpecHight - 5)
+                g.drawString(SpecMin.toString(), SpecWeight + 1, 10)
+                g.drawString(((SpecMax - SpecMin)/5 + SpecMin).toString(), SpecWeight + 1, SpecHight / 5)
+                g.drawString(((SpecMax - SpecMin)/5 * 2 + SpecMin).toString(), SpecWeight + 1, (SpecHight / 5) * 2)
+                g.drawString(((SpecMax - SpecMin)/5 * 3 + SpecMin).toString(), SpecWeight + 1, (SpecHight / 5) * 3)
+                g.drawString(((SpecMax - SpecMin)/5 * 4 + SpecMin).toString(), SpecWeight + 1, (SpecHight / 5) * 4)
+                g.drawString(SpecMax.toString(), SpecWeight + 1, SpecHight - 5)
 
 
 
