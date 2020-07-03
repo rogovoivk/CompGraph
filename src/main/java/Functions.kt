@@ -62,7 +62,6 @@ fun FileToSignal(f: File) : Signal{
 }
 
 fun SignalToFile (f: File, sgn: Signal){
-    val text = "Hello Gold!"
     var str = String()
     str = "# channels number \n" + sgn.channels + "\n# samples number\n" + sgn.samplesnumber + "\n# sampling rate\n" + sgn.samplingrate + "\n# start date\n" + sgn.startdate + "\n# start time\n" +sgn.starttime + ".000\n# channels names\n"
     for (i in 0..sgn.channels - 1){

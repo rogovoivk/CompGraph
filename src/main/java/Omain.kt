@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder
 import javax.swing.event.InternalFrameEvent
 import javax.swing.event.InternalFrameListener
 import javax.swing.filechooser.FileNameExtensionFilter
+import java.util.Arrays
 
 //import javafx.scene.input.MouseEvent
 
@@ -983,6 +984,22 @@ class TestMDI : JFrame() {
                 init {
                     deleteItem = JMenuItem("Удалить канал")
                     deleteItem.addActionListener {
+                        var newSgn = Signal(channel.sgn.channels-1, channel.sgn.samplesnumber, channel.sgn.samplingrate, channel.sgn.startdate, channel.sgn.starttime, Array(channel.sgn.channels-1, { Array(channel.sgn.samplesnumber, {0f})}), channel.sgn.from, Array(channel.sgn.channels-1, {""}) )
+                        //var newSgn = channel.sgn
+                        //newSgn.arraChannels = Array(channel.sgn.channels-1, { Array(channel.sgn.samplesnumber, {0f})})
+                        //newSgn.channelsnames = Array(channel.sgn.channels-1, {""})
+                        //newSgn.channels--
+                        for(i in 0..channel.sgn.channels-1){
+                            if (channel.channelNum > i){
+                                newSgn.arraChannels[i] = channel.sgn.arraChannels[i].copyOf()
+                                newSgn.channelsnames[i] = channel.sgn.channelsnames[i]
+                            }
+                            if (channel.channelNum < i){
+                                newSgn.arraChannels[i-1] = channel.sgn.arraChannels[i].copyOf()
+                                newSgn.channelsnames[i-1] = channel.sgn.channelsnames[i]
+                            }
+                        }
+                        createSignalWind(newSgn)
                     }
                     add(deleteItem)
                 }
