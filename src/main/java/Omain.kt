@@ -678,7 +678,14 @@ class TestMDI : JFrame() {
             oscilogramWind.setContentPane(oscillogramContents)
             oscilogramWind.isVisible = true
             var refreshBut: JButton = JButton("Обновить графики")
-            refreshBut.addActionListener{ createOscilogram() }
+            refreshBut.addActionListener{
+                for (i in 0..oscillogramList.size-1) {
+                    oscillogramList[i].start = 0
+                    oscillogramList[i].finish = oscillogramList[i].sgn.samplesnumber - 1
+                }
+                GlobalSignal.vision[0] = 0
+                GlobalSignal.vision[1] = oscillogramList[0].sgn.samplesnumber - 1
+                createOscilogram() }
             oscillogramContents.add(refreshBut)
 
             var scBar: JScrollBar = JScrollBar()
