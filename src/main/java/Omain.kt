@@ -185,17 +185,20 @@ class TestMDI : JFrame() {
         lateinit var oscilogramWind: ItemWindow
         var MainLineForHistogram = 5
 
-        /// GLOBAL VARIABLES FOR SPEKTERS @Bar ///
+        /// GLOBAL VARIABLES FOR SPEKTERS Fourier @Bar ///
         var isAmplitude = true
         var smoothCoeff = 0
         var isLinearShowing = true
         var NulElem = 1
         var arrAfterFFT = Array<Array<Float>>(1, { Array(1, {0f}) })
         ///
-        ///
+        /// GLOBAL VARIABLES FOR SPEKTERS @Bar ///
         var LCoef: Float = 1f
         var BrithC : Int = 1
         var BrightColourC: String = "Grey"
+        var SynchronizationFourierAndOsc = false
+        var FStart = 0
+        var FFinish = 100
         ///
 
         /**тут описываю окно Фурье  */
@@ -207,38 +210,63 @@ class TestMDI : JFrame() {
                 if (FourierWind.isClosed) {
 
                     FourierWind = ItemWindow("Спектр Фурье", false, true, false, false)
-                    FourierWind.setBounds(25, 25, 700, 520)
-                    FourierWind.addInternalFrameListener(MDIInternalFrameListener())
-                    FourierWind.addComponentListener(MDIResizeListener())
-                    FourierWind.setContentPane(FourierContents)
+                    FourierWind.setBounds(25, 25, 850, 520)
+
                     descPan.add(FourierWind)
                     FourierWind.isVisible = true
                 }
             } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
-                println("тут сработало исключение")
                 FourierWind = ItemWindow("Спектр Фурье", false, true, false, false)
-                FourierWind.setBounds(25, 25, 700, 520)
-                FourierWind.addInternalFrameListener(MDIInternalFrameListener())
-                FourierWind.addComponentListener(MDIResizeListener())
-                FourierWind.setContentPane(FourierContents)
+                FourierWind.setBounds(25, 25, 850, 520)
                 descPan.add(FourierWind)
                 FourierWind.isVisible = true
 
             }
+            FourierWind.addInternalFrameListener(MDIInternalFrameListener())
+            FourierWind.addComponentListener(MDIResizeListener())
+            FourierWind.setContentPane(FourierContents)
             FourierContents.removeAll()
 
-            FourierWind.setBounds(FourierWind.x, FourierWind.y, 700, FourierList.size*210 + 70)
-            var clearBut: JButton = JButton("Очистить")
-            var paramLLabel = JLabel("L")
-            var paramLText : JTextField = JTextField("0")
+            FourierWind.setBounds(FourierWind.x, FourierWind.y, 850, FourierList.size*210 + 70)
+            val clearBut: JButton = JButton("Очистить")
+            val paramLLabel = JLabel("L")
+            val paramLText : JTextField = JTextField("0")
             val a : Array<String> = arrayOf("x(0) = 0","x(0) = |x(1)|", " - ")
-            var initialParam = JComboBox(a)
+            val initialParam = JComboBox(a)
             val b : Array<String> = arrayOf("Амплитудный спектр", "СПМ")
-            var curSpectrum = JComboBox(b)
+            val curSpectrum = JComboBox(b)
             val c : Array<String> = arrayOf("Линейный", "Логарифмический")
-            var lgOrLin = JComboBox(c)
+            val lgOrLin = JComboBox(c)
             //var visionBut = JButton("Область")
-            var update = JButton("Обновить спектры")
+            val update = JButton("Обновить спектры")
+            var viewBut = JButton("Область видимости")
+
+            viewBut.addActionListener{
+                val first = JTextField(FStart.toString())
+                val last = JTextField(FFinish.toString())
+                var checkOsc = JCheckBox()
+                checkOsc.isSelected = SynchronizationFourierAndOsc
+
+                val inputs = arrayOf<JComponent>(
+                    JLabel("Укажите область видимости в процента %"),
+                    JLabel("От"),
+                    first,
+                    JLabel("До"),
+                    last,
+                    JLabel("Синхронизировать с окном Осциллограм"),
+                    checkOsc
+                )
+                val result =
+                    JOptionPane.showConfirmDialog(null, inputs, "Параметры", JOptionPane.PLAIN_MESSAGE)
+                if (result == JOptionPane.OK_OPTION) {
+                    FStart = first.text.toInt()
+                    FFinish = last.text.toInt()
+                    SynchronizationFourierAndOsc = checkOsc.isSelected
+                } else {
+                    println("User canceled / closed the dialog, result = $result")
+                }
+
+            }
 
             /*
       * Определение последовательного расположения
@@ -304,6 +332,7 @@ class TestMDI : JFrame() {
             FourierContents.add(initialParam)
             FourierContents.add(curSpectrum)
             FourierContents.add(lgOrLin)
+            FourierContents.add(viewBut)
             FourierContents.add(update)
 
             if (FourierList.size >= arrAfterFFT.size){
@@ -362,8 +391,11 @@ class TestMDI : JFrame() {
 
                 //if (NulElem == 0) transferedArr[0] = 0f
                 if (NulElem == 1) transferedArr[0] = transferedArr[1]
-                FourierList[i].GenFourierCanv(700, 200, true, GlobalSignal.vision[0], GlobalSignal.vision[1]/2, transferedArr)
-                FourierList[i].FourieCanv.preferredSize = Dimension(700, 200)
+                if (SynchronizationFourierAndOsc == true)
+                    FourierList[i].GenFourierCanv(850, 200, true, GlobalSignal.vision[0], GlobalSignal.vision[1]/2, transferedArr)
+                else
+                    FourierList[i].GenFourierCanv(850, 200, true, ((transferedArr.size)/100 * FStart)/2, ((transferedArr.size)/100 * FFinish)/2, transferedArr)
+                FourierList[i].FourieCanv.preferredSize = Dimension(850, 200)
                 FourierContents.add(FourierList[i].FourieCanv)
                 //sinePlusCosine()
 

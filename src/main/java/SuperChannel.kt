@@ -448,7 +448,7 @@ class SuperChannel(sgn_: Signal, channelNum_: Int, wight_: Float, hight_: Float,
                 for (i in FStart..FFinish - 1) {
                     //arrDot.sort(i, candleFilling + i - 1)
                     if (x1 <= FWeight) {
-                        g.drawOval(x1, FourierArrDot[i].toInt(), 1, 4)
+                        g.drawOval(x1, FourierArrDot[i].toInt(), 1, 2)
                         if (i > FStart){g.drawLine(x1, FourierArrDot[i].toInt(), x1-stepX.toInt(), FourierArrDot[i-1].toInt())}
                     } else {
                         println("график вылез за границу")
