@@ -373,17 +373,6 @@ class TestMDI : JFrame() {
 
         /**тут описываю окно Спектрограмм  */
 
-//        class SpectrogramListner : ComponentListener {
-//            override fun componentResized(e: ComponentEvent) {
-//                UpdateWindowsControl(e.component as ItemWindow)
-//
-//            }
-//
-//            override fun componentMoved(e: ComponentEvent) {}
-//            override fun componentShown(e: ComponentEvent) {}
-//            override fun componentHidden(e: ComponentEvent) {}
-//        }
-
         fun UpdateSpectrogramWind(spectrogram: SuperChannel){
             try {
                 var updateBut = JButton("Обновить графики")
@@ -610,6 +599,15 @@ class TestMDI : JFrame() {
 
         /**тут описываю окно осциллограмм */
         fun createOscilogram() {
+            class OscilogramResizeListener : ComponentListener {
+                override fun componentResized(e: ComponentEvent) {
+                    UpdateWindowsControl(e.component as ItemWindow)
+                    createOscilogram()
+                }
+                override fun componentMoved(e: ComponentEvent) {}
+                override fun componentShown(e: ComponentEvent) {}
+                override fun componentHidden(e: ComponentEvent) {}
+            }
             /**PopUpListener begin*/
             class PopUpDemo(channel: SuperChannel) : JPopupMenu() {
                 var oscillogramItem: JMenuItem
@@ -658,21 +656,27 @@ class TestMDI : JFrame() {
                     oscilogramWind.setBounds(25, 25, 700, 450)
                     oscilogramWind.addInternalFrameListener(MDIInternalFrameListener())
                     oscilogramWind.addComponentListener(MDIResizeListener())
-                    oscilogramWind.setContentPane(oscillogramContents)
+                    //oscilogramWind.setContentPane(oscillogramContents)
                     descPan.add(oscilogramWind)
-                    oscilogramWind.isVisible = true
+                    //oscilogramWind.isVisible = true
                 }
             } catch (e: UninitializedPropertyAccessException) { //я знаю, что тут один и тот же код, мне похуй, так лучше!!!
                 //var sc = SuperChannel(sgn, channel.channelNum , 600f, 300f, 0, sgn.samplesnumber-1)
                 oscilogramWind = ItemWindow("Осциллограммы", true, true, true, true)
                 oscilogramWind.setBounds(25, 25, 700, 450)
-                oscilogramWind.addInternalFrameListener(MDIInternalFrameListener())
-                oscilogramWind.addComponentListener(MDIResizeListener())
-                oscilogramWind.setContentPane(oscillogramContents)
+                //oscilogramWind.addInternalFrameListener(MDIInternalFrameListener())
+                //oscilogramWind.addComponentListener(MDIResizeListener())
+                //oscilogramWind.setContentPane(oscillogramContents)
                 descPan.add(oscilogramWind)
-                oscilogramWind.isVisible = true
+                //oscilogramWind.isVisible = true
 
             }
+            //oscilogramWind.setBounds(25, 25, 700, 450)
+            oscilogramWind.setBounds(oscilogramWind.x, oscilogramWind.y, oscilogramWind.width, oscillogramList.size * 220 + 150)
+            oscilogramWind.addInternalFrameListener(MDIInternalFrameListener())
+            oscilogramWind.addComponentListener(OscilogramResizeListener())
+            oscilogramWind.setContentPane(oscillogramContents)
+            oscilogramWind.isVisible = true
             var refreshBut: JButton = JButton("Обновить графики")
             refreshBut.addActionListener{ createOscilogram() }
             oscillogramContents.add(refreshBut)
@@ -714,7 +718,7 @@ class TestMDI : JFrame() {
 
 //                oscillogramContents.add(oscillogramList[i].canv)
                 //oscilogramWind.height = oscillogramList.size * 250
-                oscilogramWind.setBounds(25, 25, oscilogramWind.width, oscillogramList.size * 220 + 150)
+                //oscilogramWind.setBounds(25, 25, oscilogramWind.width, oscillogramList.size * 220 + 150)
             }
 
             /**ScrollBar  */
@@ -812,8 +816,22 @@ class TestMDI : JFrame() {
                             oscillogramList[i].canv.addMouseMotionListener(ml)
                         }
                         if (oscillogramList[i].isPaint == false) {
-                            if (oscillogramList[i].canv.mouseListeners.size-1 == 1)
-                                oscillogramList[i].canv.mouseListeners[oscillogramList[i].canv.mouseListeners.size-1] = PopClickListener(oscillogramList[i])
+//                            val ml1 = mouseListeners
+//                            val ml2 = mouseMotionListeners
+//                            oscillogramList[i].canv.mouseListeners[oscillogramList[i].canv.mouseListeners.size-1] = ml1[0]
+//                            oscillogramList[i].canv.mouseMotionListeners[oscillogramList[i].canv.mouseMotionListeners.size-1] = ml2[0]
+//                            oscillogramList[i].canv.addMouseListener(
+//                                ml1[0])
+//                            oscillogramList[i].canv.addMouseMotionListener(
+//                                ml2[0])
+
+                            //oscillogramList[i].canv.mouseListeners.drop(0)
+                            //oscillogramList[i].canv.mouseMotionListeners.drop(0)
+                            //oscilogramWind.internalFrameListeners[0] = MDIInternalFrameListener()
+
+                            //oscilogramWind.addInternalFrameListener(MDIInternalFrameListener())
+                            //if (oscillogramList[i].canv.mouseListeners.size-1 == 1)
+                                //oscillogramList[i].canv.mouseListeners[oscillogramList[i].canv.mouseListeners.size-1] = PopClickListener(oscillogramList[i])
                             //oscillogramList[i].canv.addMouseMotionListener(ml)
                             //oscillogramList[i].canv.addMouseListener(PopClickListener(oscillogramList[i]))
                         }
